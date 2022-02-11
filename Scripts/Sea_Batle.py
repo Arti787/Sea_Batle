@@ -151,8 +151,6 @@ class Main_menu(object):
         display.screen.blit(self.text_for_main_menu, (self.draw_button[0]+self.draw_button[0]/7-(display.KONST*((display.res[0]/720) - 1)), self.draw_button[1]))
 
 
-
-
 """"---------------------------------------------Раздел проектировки меню настроек---------------------------------------------"""
 
 class Settings_menu(object):
