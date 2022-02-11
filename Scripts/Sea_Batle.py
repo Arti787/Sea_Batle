@@ -53,10 +53,13 @@ class Main_menu(object):
 
     def start_button_pressed(self):
         global mouse_pose
+        global in_menu
         if ev.type == pygame.MOUSEBUTTONDOWN:
             if self.draw_button[0] <= mouse_pose[0] <= self.draw_button[0]+self.size_button[0] and self.draw_button[1] <= mouse_pose[1] <= self.draw_button[1]+self.size_button[1]:
                 #pygame.draw.rect(screen, (255, 192, 203), [width_start, height_start, 140, 40])
-                pygame.quit()
+                in_menu = False
+                display.screen.fill(display.WHITE)
+                #pygame.quit()
 
     def building_text(self):
         display.screen.blit(self.text_for_main_menu, (self.draw_button[0]+self.draw_button[0]/10 - 3, self.draw_button[1]))
