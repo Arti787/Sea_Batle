@@ -31,7 +31,6 @@ class Display(object):
         self.KONST = 53.14285714285711
 
 
-
 """"---------------------------------------------Раздел проектировки главного меню---------------------------------------------"""
 
 class Main_menu(object):
@@ -178,17 +177,14 @@ class Settings_menu(object):
             self.text_for_main_menu_3 = main_menu.font_for_main_menu.render(self.Main_menu_Button_back_out_of_settings, 1, display.WHITE, display.GRAY)
 
 
-
-
-
-
-
 """"---------------------------------------------Раздел проектировки игргового поля---------------------------------------------"""
 
 class Playing_field(object):
     def __init__(self):
-        self.block_size = (30, 30)                
-
+        self.block_size = (30, 30)
+    def draw_field(self):
+        for i in range(10):
+            pygame.draw.rect(display.screen, display.LIGHT_GRAY, [self.draw_button_play, self.size_button])
 
 
 
@@ -202,10 +198,8 @@ settings_menu = Settings_menu()
 
 
 #Находится ли игрок в меню?
-global in_menu
 in_menu = True
 #Находится ли игрок в настройках?
-global in_settings
 in_settings = False
 
 while True:
@@ -220,23 +214,24 @@ while True:
 
     #Логика, функционирующая пока игрок в главном меню
     if in_menu:
+        main_menu.Start_button_hovered()
+        main_menu.Start_button_pressed()
+
         main_menu.Quit_button_hovered()
         main_menu.Quit_button_pressed()
 
         main_menu.Settings_button_hovered()
         main_menu.Settings_button_pressed()
 
-        # Второй условный оператор нужен для того, чтобы невозникало бага, связанного с невозможностью исчезновения обной из кнопок
-        if in_menu:
-            main_menu.Start_button_hovered()
-            main_menu.Start_button_pressed()
-
         # Вызов функции отрисовки текста на кнопках в главном меню
         main_menu.building_text()
 
     # Логика, функционирующая пока игрок в меню настроек
-    if in_settings:
+    elif in_settings:
+        display.screen.fill(display.WHITE)
         settings_menu.Back_button_hovered()
+    else:
+        display.screen.fill(display.WHITE)
 
 
 
