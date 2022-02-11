@@ -10,10 +10,6 @@ LIGHT_GRAY = (170, 170, 170)
 GRAY = (100, 100, 100)
 PINCK = (255, 192, 203)
 
-
-#Размеры Кнопки
-size_button = (140,40)
-
 #Размеры Экрана
 res = (720,720)
 
@@ -24,24 +20,24 @@ screen = pygame.display.set_mode(res)
 screen_height = screen.get_height()
 screen_width = screen.get_width()
 
+#Размеры Кнопки
+size_button = (140,40)
+draw_button = ((screen_width/2)-size_button[0]/2,(screen_height/2)-size_button[1]/2)
+
 
 
 def start_button_hovered():
     global mouse_pose
-    width_start = (width/2)-70
-    height_start = (height/2)-20
-    if width_start <= mouse_pose[0] <= width_start+140 and height_start <= mouse_pose[1] <= height_start+40:
-        pygame.draw.rect(screen, LIGHT_GRAY, [width_start, height_start, 140, 40])
+    if draw_button[0] <= mouse_pose[0] <= draw_button[0]+size_button[0] and draw_button[1] <= mouse_pose[1] <= draw_button[1]+size_button[1]:
+        pygame.draw.rect(screen, LIGHT_GRAY, [draw_button, size_button])
 
     else:
-        pygame.draw.rect(screen,GRAY,[width_start,height_start,140,40])
+        pygame.draw.rect(screen,GRAY,[draw_button,size_button])
 
 def start_button_pressed():
     global mouse_pose
-    width_start = (width/2)-70
-    height_start = (height/2)-20
     if ev.type == pygame.MOUSEBUTTONDOWN:
-        if width_start <= mouse_pose[0] <= width_start+140 and height_start <= mouse_pose[1] <= height_start+40:
+        if draw_button[0] <= mouse_pose[0] <= draw_button[0]+size_button[0] and draw_button[1] <= mouse_pose[1] <= draw_button[1]+size_button[1]:
             pygame.quit()
             #pygame.draw.rect(screen, (255, 192, 203), [width_start, height_start, 140, 40])
 
