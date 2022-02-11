@@ -5,26 +5,40 @@ pygame.init()
 
 class Display(object):
     def __init__(self):
-        #Цветовые Переменные
+        """Раздел Графических переменных"""
+        # Цветовые Переменные
         self.WHITE = (255, 255, 255)
         self.BLACK = (0, 0, 0)
         self.LIGHT_GRAY = (170, 170, 170)
         self.GRAY = (100, 100, 100)
         self.PINCK = (255, 192, 203)
 
-        #Размеры Экрана
-        self.res = (720,720)
+        # Шрифтовые переменные и их свойства
+        self.font_for_main_menu = pygame.font.SysFont('arial', 33)
 
-        #Инициализация пространства отрисовки
+        # Шрифтовые переменные и текст, который они хранят
+        self.text_for_main_menu = self.font_for_main_menu.render("Играть", 1, self.WHITE, self.GRAY)
+
+        """Раздел Функциональных переменных"""
+        # Размеры Экрана
+        self.res = (720, 720)
+
+        # Инициализация пространства отрисовки
         self.screen = pygame.display.set_mode(self.res)
 
+        # Размеры пространства отрисовки в пиксилях
         self.screen_height = self.screen.get_height()
         self.screen_width = self.screen.get_width()
 
 class Main_menu(object):
     def __init__(self):
+        #Цвет фона главного меню
+        display.screen.fill(display.WHITE)
+
         #Размеры Кнопки
         self.size_button = (140,40)
+
+        #Координаты отрисовки предметов
         self.draw_button = ((display.screen_width/2)-self.size_button[0]/2,(display.screen_height/2)-self.size_button[1]/2)
 
     def start_button_hovered(self):
@@ -42,10 +56,16 @@ class Main_menu(object):
                 #pygame.draw.rect(screen, (255, 192, 203), [width_start, height_start, 140, 40])
                 pygame.quit()
 
+    def building_text(self):
+        display.screen.blit(display.text_for_main_menu, (self.draw_button[0], self.draw_button[1]))
+
 class Playing_field(object):
     def __init__(self):
         self.block_size = (30, 30)                
 
+
+
+"""Объявление экземпляров класса"""
 display = Display()
 main_menu = Main_menu()
 playing_field = Playing_field()
@@ -63,10 +83,11 @@ while True:
         if ev.type == pygame.QUIT:
             pygame.quit()
 
-    display.screen.fill(display.WHITE)
+    #Логика, функционирующая пока игрок в главном меню
     if in_menu:
         main_menu.start_button_hovered()
         main_menu.start_button_pressed()
+        main_menu.building_text()
 
 
     pygame.display.update()
