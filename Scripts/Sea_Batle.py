@@ -31,6 +31,7 @@ class Display(object):
         self.KONST = 53.14285714285711
 
 
+
 """"---------------------------------------------Раздел проектировки главного меню---------------------------------------------"""
 
 class Main_menu(object):
@@ -54,10 +55,6 @@ class Main_menu(object):
         self.Main_menu_Button_play = "Play"
         self.Main_menu_Button_settings = "Settings"
         self.Main_menu_Button_Quit = "Quit"
-
-
-
-
 
     # Кнопка Play
     def Start_button_hovered(self):
@@ -89,6 +86,7 @@ class Main_menu(object):
                 #Предметы отладки
                 #self.text_for_main_menu_1 = self.font_for_main_menu.render(self.Main_menu_Button_play, 1, display.WHITE,display.PINCK)
                 #print(self.draw_button_play[0]+self.draw_button_play[0]/7-(display.KONST*((display.res[0]/720) - 1)))
+
 
     # Кнопка Settings
     def Settings_button_hovered(self):
@@ -144,10 +142,18 @@ class Main_menu(object):
     #Отрисовка текста в главном меню
     def building_text(self):
         global in_settings
+        global in_menu
 
-        display.screen.blit(self.text_for_main_menu_1, ((self.draw_button_play[0]+self.draw_button_play[0]/7)-(display.KONST*((display.res[0]/720) - 1)), self.draw_button_play[1]))
-        display.screen.blit(self.text_for_main_menu_2, ((-21) + (self.draw_button_settings[0] + self.draw_button_settings[0] / 7) - (display.KONST * ((display.res[0] / 720) - 1) ), self.draw_button_settings[1]))
-        display.screen.blit(self.text_for_main_menu, (self.draw_button[0]+self.draw_button[0]/7-(display.KONST*((display.res[0]/720) - 1)), self.draw_button[1]))
+        if in_menu:
+
+            display.screen.blit(self.text_for_main_menu_1, ((self.draw_button_play[0]+self.draw_button_play[0]/7)-(display.KONST*((display.res[0]/720) - 1)), self.draw_button_play[1]))
+            display.screen.blit(self.text_for_main_menu_2, ((-21) + (self.draw_button_settings[0] + self.draw_button_settings[0] / 7) - (display.KONST * ((display.res[0] / 720) - 1) ), self.draw_button_settings[1]))
+            display.screen.blit(self.text_for_main_menu, (self.draw_button[0]+self.draw_button[0]/7-(display.KONST*((display.res[0]/720) - 1)), self.draw_button[1]))
+
+        if in_settings:
+
+            display.screen.blit(settings_menu.text_for_main_menu_3, (48,10))
+
 
 
 """"---------------------------------------------Раздел проектировки меню настроек---------------------------------------------"""
@@ -167,8 +173,17 @@ class Settings_menu(object):
         #Размеры Кнопки
         self.size_button = (140, 40)
 
+        self.text_for_main_menu_3 = main_menu.font_for_main_menu.render(self.Main_menu_Button_back_out_of_settings, 1, display.BLACK, display.LIGHT_GRAY)
+
     def Back_button_hovered (self):
+
+        # Цвет фона меню настроек
+        display.screen.fill(display.PINCK)
+
+
         global mouse_pose
+
+
         if self.draw_button_back_out_of_settings[0] <= mouse_pose[0] <= self.draw_button_back_out_of_settings[0]+self.size_button[0] and self.draw_button_back_out_of_settings[1] <= mouse_pose[1] <= self.draw_button_back_out_of_settings[1]+self.size_button[1]:
             pygame.draw.rect(display.screen, display.LIGHT_GRAY, [self.draw_button_back_out_of_settings, self.size_button])
             self.text_for_main_menu_3 = main_menu.font_for_main_menu.render(self.Main_menu_Button_back_out_of_settings, 1, display.WHITE, display.LIGHT_GRAY)
@@ -176,16 +191,28 @@ class Settings_menu(object):
             pygame.draw.rect(display.screen, display.GRAY, [self.draw_button_back_out_of_settings, self.size_button])
             self.text_for_main_menu_3 = main_menu.font_for_main_menu.render(self.Main_menu_Button_back_out_of_settings, 1, display.WHITE, display.GRAY)
 
+    def Back_button_pressed(self):
+        global mouse_pose
+        global in_menu
+        global in_settings
+
+        if ev.type == pygame.MOUSEBUTTONDOWN:
+            if self.draw_button_back_out_of_settings[0] <= mouse_pose[0] <= self.draw_button_back_out_of_settings[0]+self.size_button[0] and self.draw_button_back_out_of_settings[1] <= mouse_pose[1] <= self.draw_button_back_out_of_settings[1]+self.size_button[1]:
+                in_menu = True
+                # Делаю невидимым меню настроек
+                in_settings = False
+                pygame.draw.rect(display.screen, display.WHITE, [self.draw_button_back_out_of_settings, self.size_button])
+                self.text_for_main_menu_3 = main_menu.font_for_main_menu.render(self.Main_menu_Button_back_out_of_settings, 1, display.WHITE, display.WHITE)
+
+                display.screen.fill(display.WHITE)
+
+
 
 """"---------------------------------------------Раздел проектировки игргового поля---------------------------------------------"""
 
 class Playing_field(object):
     def __init__(self):
         self.block_size = (30, 30)
-    def draw_field(self):
-        for i in range(10):
-            pygame.draw.rect(display.screen, display.LIGHT_GRAY, [self.draw_button_play, self.size_button])
-
 
 
 """"---------------------------------------------Раздел системных вызовов---------------------------------------------"""
@@ -198,8 +225,10 @@ settings_menu = Settings_menu()
 
 
 #Находится ли игрок в меню?
+global in_menu
 in_menu = True
 #Находится ли игрок в настройках?
+global in_settings
 in_settings = False
 
 while True:
@@ -214,27 +243,27 @@ while True:
 
     #Логика, функционирующая пока игрок в главном меню
     if in_menu:
-        main_menu.Start_button_hovered()
-        main_menu.Start_button_pressed()
-
         main_menu.Quit_button_hovered()
         main_menu.Quit_button_pressed()
 
         main_menu.Settings_button_hovered()
         main_menu.Settings_button_pressed()
 
-        # Вызов функции отрисовки текста на кнопках в главном меню
-        main_menu.building_text()
+        # Второй условный оператор нужен для того, чтобы невозникало бага, связанного с невозможностью исчезновения обной из кнопок
+        if in_menu:
+            main_menu.Start_button_hovered()
+            main_menu.Start_button_pressed()
+
+
 
     # Логика, функционирующая пока игрок в меню настроек
-    elif in_settings:
-        display.screen.fill(display.WHITE)
+    if in_settings:
         settings_menu.Back_button_hovered()
-    else:
-        display.screen.fill(display.WHITE)
+        settings_menu.Back_button_pressed()
 
 
-
+    # Вызов функции отрисовки текста на кнопках в главном меню
+    main_menu.building_text()
 
     pygame.display.update()
 
