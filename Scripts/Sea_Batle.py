@@ -13,11 +13,6 @@ class Display(object):
         self.GRAY = (100, 100, 100)
         self.PINCK = (255, 192, 203)
 
-        # Шрифтовые переменные и их свойства
-        self.font_for_main_menu = pygame.font.SysFont('arial', 33)
-
-        # Шрифтовые переменные и текст, который они хранят
-        self.text_for_main_menu = self.font_for_main_menu.render("Играть", 1, self.WHITE, self.GRAY)
 
         """Раздел Функциональных переменных"""
         # Размеры Экрана
@@ -41,13 +36,20 @@ class Main_menu(object):
         #Координаты отрисовки предметов
         self.draw_button = ((display.screen_width/2)-self.size_button[0]/2,(display.screen_height/2)-self.size_button[1]/2)
 
+        # Шрифтовые переменные и их свойства
+        self.font_for_main_menu = pygame.font.SysFont('arial', 33)
+
+
+
+
     def start_button_hovered(self):
         global mouse_pose
         if self.draw_button[0] <= mouse_pose[0] <= self.draw_button[0]+self.size_button[0] and self.draw_button[1] <= mouse_pose[1] <= self.draw_button[1]+self.size_button[1]:
             pygame.draw.rect(display.screen, display.LIGHT_GRAY, [self.draw_button, self.size_button])
-
+            self.text_for_main_menu = self.font_for_main_menu.render("Играть", 1, display.WHITE, display.LIGHT_GRAY)
         else:
             pygame.draw.rect(display.screen,display.GRAY,[self.draw_button,self.size_button])
+            self.text_for_main_menu = self.font_for_main_menu.render("Играть", 1, display.WHITE, display.GRAY)
 
     def start_button_pressed(self):
         global mouse_pose
@@ -57,7 +59,7 @@ class Main_menu(object):
                 pygame.quit()
 
     def building_text(self):
-        display.screen.blit(display.text_for_main_menu, (self.draw_button[0], self.draw_button[1]))
+        display.screen.blit(self.text_for_main_menu, (self.draw_button[0]+self.draw_button[0]/10 - 3, self.draw_button[1]))
 
 class Playing_field(object):
     def __init__(self):
