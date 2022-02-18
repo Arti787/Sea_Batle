@@ -52,7 +52,7 @@ class Display(object):
         # Размеры Экрана
         self.res = (self.Standard_Screen_Size_Height, self.Standard_Screen_Size_Width)
 
-        # Инициализация пространства отрисовки
+        # Инициализация пространства отрисовки (полноэкранный режим или нет)
         if Full_screen_mode:
             self.screen = pygame.display.set_mode((self.res), pygame.FULLSCREEN)
         else:
@@ -64,9 +64,6 @@ class Display(object):
 
         # Ожидание в милисекундах
         self.WAITING_ME = 75
-
-        # Эта штука нужна для того, чтобы надписи не смещались (выверена империсеским путём)
-        #self.KONST = 53.14285714285711
 
 """"---------------------------------------------Раздел проектировки главного меню---------------------------------------------"""
 class Main_menu(object):
@@ -83,6 +80,7 @@ class Main_menu(object):
         self.draw_button = ((display.screen_width / 2) - self.size_button[0] / 2, (display.screen_height / 2) - self.size_button[1] / 2 + 60)
         self.draw_button_back = (48, 10)
 
+        # Координаты отрисовки предметов (та штука, что идёт следом очень важна для отрисовки почти всего меню настроек на основе её координат были спроектированы другие элементы раздела настроек)
         self.coordinates_of_text_for_main_menu_screen_resolution = (25, 70)
 
 
@@ -112,20 +110,8 @@ class Main_menu(object):
         global in_menu
         if ev.type == pygame.MOUSEBUTTONDOWN:
             if self.draw_button_play[0] <= mouse_pose[0] <= self.draw_button_play[0] + self.size_button[0] and self.draw_button_play[1] <= mouse_pose[1] <= self.draw_button_play[1] + self.size_button[1]:
-
                 in_menu = False
-                # Закрашиваю белым все квадраты
-                self.text_for_main_menu_1 = self.font_for_main_menu.render(self.Main_menu_Button_play, 1, display.WHITE,display.WHITE)
-                self.text_for_main_menu = self.font_for_main_menu.render(self.Main_menu_Button_Quit, 1, display.WHITE,display.WHITE)
-                self.text_for_main_menu_2 = self.font_for_main_menu.render(self.Main_menu_Button_Quit, 1, display.WHITE,display.WHITE)
-
-                #Закрашиваю белым все надписи
-                pygame.draw.rect(display.screen, display.WHITE, [self.draw_button_settings, self.size_button])
-                pygame.draw.rect(display.screen, display.WHITE, [self.draw_button, self.size_button])
-                pygame.draw.rect(display.screen, display.WHITE, [self.draw_button_play, self.size_button])
-                #Предметы отладки
-                #self.text_for_main_menu_1 = self.font_for_main_menu.render(self.Main_menu_Button_play, 1, display.WHITE,display.PINCK)
-                #print(self.draw_button_play[0]+self.draw_button_play[0]/7-(display.KONST*((display.res[0]/720) - 1)))
+                display.screen.fill(display.WHITE)
 
 
     # Кнопка Settings
@@ -148,16 +134,6 @@ class Main_menu(object):
         if ev.type == pygame.MOUSEBUTTONDOWN:
             if self.draw_button_settings[0] <= mouse_pose[0] <= self.draw_button_settings[0] + self.size_button[0] and self.draw_button_settings[1] <= mouse_pose[1] <= self.draw_button_settings[1] + self.size_button[1]:
                 in_menu = False
-                # Закрашиваю белым все квадраты
-                self.text_for_main_menu_1 = self.font_for_main_menu.render(self.Main_menu_Button_play, 1, display.WHITE,display.WHITE)
-                self.text_for_main_menu = self.font_for_main_menu.render(self.Main_menu_Button_Quit, 1, display.WHITE,display.WHITE)
-                self.text_for_main_menu_2 = self.font_for_main_menu.render(self.Main_menu_Button_Quit, 1, display.WHITE,display.WHITE)
-
-                # Закрашиваю белым все надписи
-                pygame.draw.rect(display.screen, display.WHITE, [self.draw_button_settings, self.size_button])
-                pygame.draw.rect(display.screen, display.WHITE, [self.draw_button, self.size_button])
-                pygame.draw.rect(display.screen, display.WHITE, [self.draw_button_play, self.size_button])
-
                 # Делаю видимым меню настроек
                 in_settings = True
                 # Цвет фона меню настроек
@@ -167,7 +143,7 @@ class Main_menu(object):
     # Кнопка Quit
     def Quit_button_hovered(self):
         global mouse_pose
-        if  self.draw_button[0] <= mouse_pose[0] <= self.draw_button[0]+self.size_button[0] and self.draw_button[1] <= mouse_pose[1] <= self.draw_button[1]+self.size_button[1]:
+        if self.draw_button[0] <= mouse_pose[0] <= self.draw_button[0]+self.size_button[0] and self.draw_button[1] <= mouse_pose[1] <= self.draw_button[1]+self.size_button[1]:
             pygame.draw.rect(display.screen, display.LIGHT_GRAY, [self.draw_button, self.size_button])
             self.text_for_main_menu = self.font_for_main_menu.render(self.Main_menu_Button_Quit, 1, display.WHITE, display.LIGHT_GRAY)
         else:
@@ -187,13 +163,12 @@ class Main_menu(object):
         global in_menu
 
         if in_menu:
-
+            #отрисовка кнопок старт, настроки и выход
             display.screen.blit(self.text_for_main_menu_1, (self.draw_button_play[0] + self.size_button[0]/3.25, self.draw_button_play[1]))
             display.screen.blit(self.text_for_main_menu_2, (self.draw_button_settings[0] + self.size_button[0]/7.5, self.draw_button_settings[1]))
             display.screen.blit(self.text_for_main_menu, (self.draw_button[0] + self.size_button[0]/3.25, self.draw_button[1]))
 
         if in_settings:
-
             # Oтрисовка кнопки Back
             display.screen.blit(settings_menu.text_for_main_menu_3, self.draw_button_back)
             # Отрисовка стрелочек выбора разрешения и текста между ними
@@ -220,6 +195,7 @@ class Settings_menu(object):
     global Full_screen_mode
     global in_settings
     global mouse_pose
+
 
     def __init__(self):
         # Координаты отрисовки предметов
@@ -253,22 +229,14 @@ class Settings_menu(object):
         #Текст и его свойства, передаваемые в функцию building_text
         self.text_for_main_menu_3 = main_menu.font_for_main_menu.render(self.Main_menu_Button_back_out_of_settings, 1, display.BLACK, display.LIGHT_GRAY)
         self.text_for_main_menu_screen_resolution = main_menu.font_for_Screen_resolution_settings.render(self.Main_menu_Button_change_screen_resolution, 1, display.BLACK, display.PINCK)
-
         self.text_for_main_menu_screen_mode = main_menu.font_for_Screen_resolution_settings.render(self.Main_menu_Button_change_screen_mode, 1, display.BLACK, display.PINCK)
-        # (это "<")
         self.text_for_setting_menu_Left_Vibirator_permission = main_menu.font_for_main_menu.render(self.Main_menu_Button_Left_setting_change, 1, display.BLACK, display.PINCK)
-        # (это ">")
         self.text_for_setting_menu_Right_Vibirator_permission = main_menu.font_for_main_menu.render(self.Main_menu_Button_Right_setting_change, 1, display.BLACK, display.PINCK)
 
 
     # Кнопка Back
     def Back_button_hovered (self):
-
-
-
-
         global mouse_pose
-
 
         if self.draw_button_back_out_of_settings[0] <= mouse_pose[0] <= self.draw_button_back_out_of_settings[0]+self.size_button[0] and self.draw_button_back_out_of_settings[1] <= mouse_pose[1] <= self.draw_button_back_out_of_settings[1]+self.size_button[1]:
             pygame.draw.rect(display.screen, display.LIGHT_GRAY, [self.draw_button_back_out_of_settings, self.size_button])
@@ -282,7 +250,6 @@ class Settings_menu(object):
         global in_menu
         global in_settings
 
-
         if ev.type == pygame.MOUSEBUTTONDOWN:
             if self.draw_button_back_out_of_settings[0] <= mouse_pose[0] <= self.draw_button_back_out_of_settings[0]+self.size_button[0] and self.draw_button_back_out_of_settings[1] <= mouse_pose[1] <= self.draw_button_back_out_of_settings[1]+self.size_button[1]:
                 in_menu = True
@@ -293,19 +260,12 @@ class Settings_menu(object):
 
                 display.screen.fill(display.WHITE)
 
+
     # "Ползунки" смены разрешения
-
     def Left_setting_change_button_pressed(self):
-
         global mouse_pose
 
-
-
-        #отладка программы (рисовка квадрата)
-        #pygame.draw.rect(display.screen, display.LIGHT_GRAY, [(main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 200, main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3 ), self.size_button_resolution_selection])
-
         if ev.type == pygame.MOUSEBUTTONDOWN:
-
 
             if  main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 200 <= mouse_pose[0] <= main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 200 + self.size_button_resolution_selection[0] and main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] -3 <= mouse_pose[1] <= main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3 + self.size_button_resolution_selection[1]:
                 if self.screen_resolution_Default != 0:
@@ -313,10 +273,8 @@ class Settings_menu(object):
 
                 else:
                     self.screen_resolution_Default = 4
+            # Ожидание создано для того, чтобы программа не считывала сразу несколько кликов
             pygame.time.wait(display.WAITING_ME)
-
-
-
 
                     # Это то, что будет отображаться при выборе того или иного разрешения
         if self.screen_resolution_Default == 0:
@@ -342,9 +300,6 @@ class Settings_menu(object):
 
     def Right_setting_change_button_pressed(self):
         global mouse_pose
-
-        # отладка программы (рисовка квадрата)
-        # pygame.draw.rect(display.screen, display.LIGHT_GRAY, [(main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 200, main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3 ), self.size_button_resolution_selection])
 
         if ev.type == pygame.MOUSEBUTTONDOWN:
 
@@ -372,13 +327,16 @@ class Settings_menu(object):
                 else:
                     self.screen_resolution_Default = 0
 
+            # Ожидание создано для того, чтобы программа не считывала сразу несколько кликов
             pygame.time.wait(display.WAITING_ME)
+
 
     #Кнопка полноэкранного режима
     def switch_screen_mode_hovered(self):
         global mouse_pose
         global Full_screen_mode
 
+        #Условие при котором цвет кнопки будет менятся с красного на зеленый
         if Full_screen_mode:
             if self.draw_button_sweech__screen_mode[0] <= mouse_pose[0] <= self.draw_button_sweech__screen_mode[0] + self.size_button_swich_screen_mode[0] and self.draw_button_sweech__screen_mode[1] <= mouse_pose[1] <= self.draw_button_sweech__screen_mode[1] + self.size_button_swich_screen_mode[1]:
                 pygame.draw.rect(display.screen, display.LIGHT_GREEN,[self.draw_button_sweech__screen_mode, self.size_button_swich_screen_mode])
@@ -403,15 +361,8 @@ class Settings_menu(object):
                     Full_screen_mode = True
 
 
-
-
     # Кнопка "применить"
-
     def Apply_button_hovered(self):
-        global mouse_pose
-        # Цвет фона меню настроек
-
-
         global mouse_pose
 
         if main_menu.draw_button_back[0]+115 <= mouse_pose[0] <= main_menu.draw_button_back[0]+ 115 + self.size_button[0] and main_menu.draw_button_back[1] <= mouse_pose[1] <= main_menu.draw_button_back[1] + self.size_button[1]:
@@ -423,6 +374,7 @@ class Settings_menu(object):
 
     def Apply_button_pressed(self):
         global mouse_pose
+
         if ev.type == pygame.MOUSEBUTTONDOWN:
             if main_menu.draw_button_back[0] + 150 <= mouse_pose[0] <= main_menu.draw_button_back[0] + 150 + self.size_button[0] and main_menu.draw_button_back[1] <= mouse_pose[1] <= main_menu.draw_button_back[1] + self.size_button[1]:
 
@@ -504,4 +456,3 @@ while True:
     main_menu.building_text()
 
     pygame.display.update()
-
