@@ -13,8 +13,12 @@ change = True
 in_menu = True
 # Находится ли игрок в настройках?
 in_settings = False
+# Находится ли игрок непосредствено игре?
+in_playing = False
 # Включить полноэкранный режим?
 Full_screen_mode = False
+# Стандартное разрешение экрана
+screen_resolution_Default = 1
 
 """"Раздел вызова всех Функций инициализаторов"""
 def Update_Fuking_function():
@@ -26,10 +30,13 @@ class Display(object):
     def __init__(self):
         global change
         global Full_screen_mode
-        #Создание протокола настроек по умолчанию
+        global screen_resolution_Default
+        #разрешения экрана 
+        self.Standard_Screen_Size = [[800,600],[720,720],[1024,768],[1280,1024],[1920,1080]]
+
+        
         if change:
-            self.Standard_Screen_Size_Height = 720
-            self.Standard_Screen_Size_Width = 720
+            screen_resolution_Default = 1
             change = False
 
 
@@ -50,7 +57,7 @@ class Display(object):
 
         """Раздел Функциональных переменных"""
         # Размеры Экрана
-        self.res = (self.Standard_Screen_Size_Height, self.Standard_Screen_Size_Width)
+        self.res = (self.Standard_Screen_Size[screen_resolution_Default])
 
         # Инициализация пространства отрисовки (полноэкранный режим или нет)
         if Full_screen_mode:
@@ -108,9 +115,11 @@ class Main_menu(object):
     def Start_button_pressed(self):
         global mouse_pose
         global in_menu
+        global in_playing
         if ev.type == pygame.MOUSEBUTTONDOWN:
             if self.draw_button_play[0] <= mouse_pose[0] <= self.draw_button_play[0] + self.size_button[0] and self.draw_button_play[1] <= mouse_pose[1] <= self.draw_button_play[1] + self.size_button[1]:
                 in_menu = False
+                in_playing = True
                 display.screen.fill(display.WHITE)
 
 
@@ -161,6 +170,7 @@ class Main_menu(object):
     def building_text(self):
         global in_settings
         global in_menu
+        global screen_resolution_Default
 
         if in_menu:
             #отрисовка кнопок старт, настроки и выход
@@ -176,13 +186,13 @@ class Main_menu(object):
             display.screen.blit(settings_menu.text_for_setting_menu_Left_Vibirator_permission, ( self.coordinates_of_text_for_main_menu_screen_resolution[0] + 200,  self.coordinates_of_text_for_main_menu_screen_resolution[1] - 3))
             display.screen.blit(settings_menu.text_for_main_menu_screen_resolution_size, ( self.coordinates_of_text_for_main_menu_screen_resolution[0] + 220,  self.coordinates_of_text_for_main_menu_screen_resolution[1]))
                         # Отрисовка правой стрелочки выбора разрешения
-            if (settings_menu.screen_resolution_Default == 0) or (settings_menu.screen_resolution_Default == 1):
+            if (screen_resolution_Default == 0) or (screen_resolution_Default == 1):
                 display.screen.blit(settings_menu.text_for_setting_menu_Right_Vibirator_permission, (self.coordinates_of_text_for_main_menu_screen_resolution[0] + 315,self.coordinates_of_text_for_main_menu_screen_resolution[1] - 3))
 
-            if (settings_menu.screen_resolution_Default == 2):
+            if (screen_resolution_Default == 2):
                 display.screen.blit(settings_menu.text_for_setting_menu_Right_Vibirator_permission, (self.coordinates_of_text_for_main_menu_screen_resolution[0] + 325,self.coordinates_of_text_for_main_menu_screen_resolution[1] - 3))
 
-            if (settings_menu.screen_resolution_Default == 3) or (settings_menu.screen_resolution_Default == 4):
+            if (screen_resolution_Default == 3) or (screen_resolution_Default == 4):
                 display.screen.blit(settings_menu.text_for_setting_menu_Right_Vibirator_permission,( self.coordinates_of_text_for_main_menu_screen_resolution[0] + 335,  self.coordinates_of_text_for_main_menu_screen_resolution[1] - 3))
 
             #Отрисовка текста на кнопке Apply
@@ -198,6 +208,7 @@ class Settings_menu(object):
 
 
     def __init__(self):
+        global screen_resolution_Default
         # Координаты отрисовки предметов
         self.draw_button_back_out_of_settings = (10, 10)
         self.draw_button_sweech__screen_mode = (main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 170,main_menu.coordinates_of_text_for_main_menu_screen_resolution[1]+50)
@@ -219,7 +230,7 @@ class Settings_menu(object):
 
 
         # Номер дефолтного разрешения
-        self.screen_resolution_Default = 1
+        screen_resolution_Default = 1
 
         #Размеры Кнопки
         self.size_button = (140, 40)
@@ -264,68 +275,70 @@ class Settings_menu(object):
     # "Ползунки" смены разрешения
     def Left_setting_change_button_pressed(self):
         global mouse_pose
+        global screen_resolution_Default
 
         if ev.type == pygame.MOUSEBUTTONDOWN:
 
             if  main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 200 <= mouse_pose[0] <= main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 200 + self.size_button_resolution_selection[0] and main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] -3 <= mouse_pose[1] <= main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3 + self.size_button_resolution_selection[1]:
-                if self.screen_resolution_Default != 0:
-                    self.screen_resolution_Default = self.screen_resolution_Default - 1
+                if screen_resolution_Default != 0:
+                    screen_resolution_Default = screen_resolution_Default - 1
 
                 else:
-                    self.screen_resolution_Default = 4
+                    screen_resolution_Default = 4
             # Ожидание создано для того, чтобы программа не считывала сразу несколько кликов
             pygame.time.wait(display.WAITING_ME)
 
                     # Это то, что будет отображаться при выборе того или иного разрешения
-        if self.screen_resolution_Default == 0:
+        if screen_resolution_Default == 0:
            display.screen.fill(display.PINCK)
            self.text_for_main_menu_screen_resolution_size = main_menu.font_for_Screen_resolution_settings.render(self.Main_menu_resolution_0, 1, display.BLACK, display.PINCK)
 
 
-        elif self.screen_resolution_Default == 1:
+        elif screen_resolution_Default == 1:
             display.screen.fill(display.PINCK)
             self.text_for_main_menu_screen_resolution_size = main_menu.font_for_Screen_resolution_settings.render(self.Main_menu_resolution_1, 1, display.BLACK, display.PINCK)
 
-        elif self.screen_resolution_Default == 2:
+        elif screen_resolution_Default == 2:
             display.screen.fill(display.PINCK)
             self.text_for_main_menu_screen_resolution_size = main_menu.font_for_Screen_resolution_settings.render(self.Main_menu_resolution_2, 1, display.BLACK, display.PINCK)
 
-        elif self.screen_resolution_Default == 3:
+        elif screen_resolution_Default == 3:
             display.screen.fill(display.PINCK)
             self.text_for_main_menu_screen_resolution_size = main_menu.font_for_Screen_resolution_settings.render(self.Main_menu_resolution_3, 1, display.BLACK, display.PINCK)
 
-        elif self.screen_resolution_Default == 4:
+        elif screen_resolution_Default == 4:
             display.screen.fill(display.PINCK)
             self.text_for_main_menu_screen_resolution_size = main_menu.font_for_Screen_resolution_settings.render(self.Main_menu_resolution_4, 1, display.BLACK, display.PINCK)
 
     def Right_setting_change_button_pressed(self):
         global mouse_pose
+        global screen_resolution_Default
 
         if ev.type == pygame.MOUSEBUTTONDOWN:
 
-            if (self.screen_resolution_Default == 0 or self.screen_resolution_Default == 1) and main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 315 <= mouse_pose[0] <= main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 315 + self.size_button_resolution_selection[0] and main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3 <= mouse_pose[1] <= main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3 + self.size_button_resolution_selection[1]:
+            if (screen_resolution_Default == 0 or screen_resolution_Default == 1) and main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 315 <= mouse_pose[0] <= main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 315 + self.size_button_resolution_selection[0] and main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3 <= mouse_pose[1] <= main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3 + self.size_button_resolution_selection[1]:
 
-                if self.screen_resolution_Default != 4:
-                    self.screen_resolution_Default = self.screen_resolution_Default + 1
-
-                else:
-                    self.screen_resolution_Default = 0
-
-            if self.screen_resolution_Default == 2 and main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 325 <= mouse_pose[0] <= main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 325 + self.size_button_resolution_selection[0] and main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3 <= mouse_pose[1] <= main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3 + self.size_button_resolution_selection[1]:
-
-                if self.screen_resolution_Default != 4:
-                    self.screen_resolution_Default = self.screen_resolution_Default + 1
+                if screen_resolution_Default != 4:
+                    screen_resolution_Default = screen_resolution_Default + 1
 
                 else:
-                    self.screen_resolution_Default = 0
+                    screen_resolution_Default = 0
 
-            if (self.screen_resolution_Default == 3 or self.screen_resolution_Default == 4) and main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 335 <= mouse_pose[0] <= main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 335 + self.size_button_resolution_selection[0] and main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3 <= mouse_pose[1] <= main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3 + self.size_button_resolution_selection[1]:
+            if screen_resolution_Default == 2 and main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 325 <= mouse_pose[0] <= main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 325 + self.size_button_resolution_selection[0] and main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3 <= mouse_pose[1] <= main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3 + self.size_button_resolution_selection[1]:
 
-                if self.screen_resolution_Default != 4:
-                    self.screen_resolution_Default = self.screen_resolution_Default + 1
+                if screen_resolution_Default != 4:
+                    screen_resolution_Default = screen_resolution_Default + 1
 
                 else:
-                    self.screen_resolution_Default = 0
+                    screen_resolution_Default = 0
+
+            if (screen_resolution_Default == 3 or screen_resolution_Default == 4) and main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 335 <= mouse_pose[0] <= main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 335 + self.size_button_resolution_selection[0] and main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3 <= mouse_pose[1] <= main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3 + self.size_button_resolution_selection[1]:
+
+                if screen_resolution_Default != 4:
+                    screen_resolution_Default = screen_resolution_Default + 1
+
+                else:
+                    screen_resolution_Default = 0
 
             # Ожидание создано для того, чтобы программа не считывала сразу несколько кликов
             pygame.time.wait(display.WAITING_ME)
@@ -374,36 +387,72 @@ class Settings_menu(object):
 
     def Apply_button_pressed(self):
         global mouse_pose
+        global screen_resolution_Default
 
         if ev.type == pygame.MOUSEBUTTONDOWN:
             if main_menu.draw_button_back[0] + 150 <= mouse_pose[0] <= main_menu.draw_button_back[0] + 150 + self.size_button[0] and main_menu.draw_button_back[1] <= mouse_pose[1] <= main_menu.draw_button_back[1] + self.size_button[1]:
-
-                if self.screen_resolution_Default == 0:
-                    display.Standard_Screen_Size_Height = 800
-                    display.Standard_Screen_Size_Width  = 600
-
-                if self.screen_resolution_Default == 1:
-                    display.Standard_Screen_Size_Height = 720
-                    display.Standard_Screen_Size_Width  = 720
-
-                if self.screen_resolution_Default == 2:
-                    display.Standard_Screen_Size_Height = 1024
-                    display.Standard_Screen_Size_Width  = 768
-
-                if self.screen_resolution_Default == 3:
-                    display.Standard_Screen_Size_Height = 1280
-                    display.Standard_Screen_Size_Width  = 1024
-
-                if self.screen_resolution_Default == 4:
-                    display.Standard_Screen_Size_Height = 1920
-                    display.Standard_Screen_Size_Width  = 1080
+                display.res = (display.Standard_Screen_Size[screen_resolution_Default])
 
                 Update_Fuking_function()
 
 """"---------------------------------------------Раздел проектировки игргового поля---------------------------------------------"""
 class Playing_field(object):
     def __init__(self):
-        self.block_size = (30, 30)
+        self.block_side_size = 25
+        self.block_size = (self.block_side_size, self.block_side_size)
+        # Отступ
+        self.indent = 2
+        #список с постоянными значениями координат блоков поля
+        self.BLOCK_PLACE = [200, 200]
+        #список с изменяющимися значениями координат блоков поля
+        self.block_place = [200, 200]
+    
+    def one_deck_ship (self):
+        pygame.draw.rect(display.screen, display.DARK_GREEN, [self.block_place, self.block_size])  
+
+    def two_deck_ship (self):
+        tmp_block_place = self.block_place
+        for x in range(2):
+            pygame.draw.rect(display.screen, display.DARK_GREEN, [tmp_block_place, self.block_size])
+            tmp_block_place[0] += self.block_side_size
+            tmp_block_place[0] += self.indent
+
+    def inv_two_deck_ship (self):
+        pygame.draw.rect(display.screen, display.DARK_GREEN, [self.block_place, self.block_size]) 
+
+    def three_deck_ship (self):
+        pygame.draw.rect(display.screen, display.DARK_GREEN, [self.block_place, self.block_size]) 
+    def inv_three_deck_ship (self):
+        pygame.draw.rect(display.screen, display.DARK_GREEN, [self.block_place, self.block_size]) 
+
+    def four_deck_ship (self):
+        pygame.draw.rect(display.screen, display.DARK_GREEN, [self.block_place, self.block_size]) 
+    def inv_four_deck_ship (self):
+        pygame.draw.rect(display.screen, display.DARK_GREEN, [self.block_place, self.block_size])
+        
+        
+    def draw_field(self):
+        global mouse_pose
+        # Отрисовываю поле 10 на 10
+        for x in range(10):
+            for y in range(10):
+                if self.block_place[0] <= mouse_pose[0] <= self.block_place[0] + self.block_size[0] and self.block_place[1] <= mouse_pose[1] <= self.block_place[1] + self.block_size[1]:
+                    pygame.draw.rect(display.screen, display.DARK_GREEN, [self.block_place, self.block_size])
+                    #pygame.draw.rect(display.screen, display.DARK_GREEN, [[self.block_place[0] + self.indent + self.block_side_size, self.block_place[1]], self.block_size])
+                else:
+                    #pygame.draw.rect(display.screen, display.LIGHT_GRAY, [self.block_place, self.block_size])
+                    pygame.draw.rect(display.screen, display.LIGHT_GRAY, [self.block_place, self.block_size])
+                    
+ 
+                self.block_place[0] += self.block_side_size
+                self.block_place[0] += self.indent
+            #обнуляю координаты икса, чтобы начать отрисовывать следующую строчку
+            self.block_place[0] = self.BLOCK_PLACE[0]
+            self.block_place[1] += self.block_side_size
+            self.block_place[1] += self.indent
+        self.block_place[1] = self.BLOCK_PLACE[1]
+
+        
 
 """---------------------------------------------Объявление экземпляров класса---------------------------------------------"""
 display = Display()
@@ -450,6 +499,10 @@ while True:
         #Вызов функций, отвечающих за выход из менб настроек (ПРИМЕЧАНИЕ: СЛЕДУЮЩИЙ БЛОК ФУНКЦИЙ ОБЯЗАТЕЛЬНО СТАВИТЬ В КОНЕЦ)
         settings_menu.Back_button_hovered()
         settings_menu.Back_button_pressed()
+
+    if in_playing:
+        playing_field.draw_field()
+
 
 
     # Вызов функции отрисовки текста на кнопках в главном меню
