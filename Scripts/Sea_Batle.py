@@ -54,6 +54,17 @@ class Display(object):
         self.LIGHT_RED = (255,0,0)
         self.RED = (170,0,0)
         self.DARK_RED = (100,0,0)
+        self.AQUA = (0, 255, 255)  # МОРСКАЯ ВОЛНА
+        self.BLUE = (0, 0, 255)  # СИНИЙ
+        self.FUCHSIA = (255, 0, 255)  # ФУКСИЯ
+        self.GRAY = (128, 128, 128)  # СЕРЫЙ
+        self.MAROON = (128, 0, 0)  # ТЕМНО-БОРДОВЫЙ
+        self.NAVY_BLUE = (0, 0, 128)  # ТЕМНО-СИНИЙ
+        self.OLIVE = (128, 128, 0)  # ОЛИВКОВЫЙ
+        self.PURPLE = (128, 0, 128)  # ФИОЛЕТОВЫЙ
+        self.SILVER = (192, 192, 192)  # СЕРЕБРЯНЫЙ
+        self.TEAL = (0, 128, 128)  # ЗЕЛЕНО-ГОЛУБОЙ
+        self.YELLOW = (255, 255, 0)  # ЖЕЛТЫЙ
 
         """Раздел Функциональных переменных"""
         # Размеры Экрана
@@ -174,9 +185,9 @@ class Main_menu(object):
 
         if in_menu:
             #отрисовка кнопок старт, настроки и выход
-            display.screen.blit(self.text_for_main_menu_1, (self.draw_button_play[0] + self.size_button[0]/3.25, self.draw_button_play[1]))
-            display.screen.blit(self.text_for_main_menu_2, (self.draw_button_settings[0] + self.size_button[0]/7.5, self.draw_button_settings[1]))
-            display.screen.blit(self.text_for_main_menu, (self.draw_button[0] + self.size_button[0]/3.25, self.draw_button[1]))
+            display.screen.blit(self.text_for_main_menu_1, (self.draw_button_play[0] + (self.size_button[0] - 53)/2  , self.draw_button_play[1]))
+            display.screen.blit(self.text_for_main_menu_2, (self.draw_button_settings[0] + (self.size_button[0] - 99)/2, self.draw_button_settings[1]))
+            display.screen.blit(self.text_for_main_menu, (self.draw_button[0] + (self.size_button[0] - 50)/2, self.draw_button[1]))
 
         if in_settings:
             # Oтрисовка кнопки Back
