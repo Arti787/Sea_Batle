@@ -5,7 +5,7 @@ import sys
 from pygame import display
 
 pygame.init()
-pygame.display.set_caption("Sea Battle")
+pygame.display.set_caption("Sea Battle by Sergaris and GriGA")
 
 pg.mixer.music.load('Sounds/piraty-karibskogo-morja-saundtrek-hes-a-pirate-glavnaja-tema(mp3gid.me).mp3')
 pg.mixer.music.play(-1)
@@ -275,13 +275,13 @@ class Main_menu(object):
             self.coordinates_of_text_for_main_menu_screen_resolution[1] + 100))
             display.screen.blit(settings_menu.text_for_setting_menu_turn_down_the_sound, (
             self.coordinates_of_text_for_main_menu_selection_volume[0] + 100,
-            self.coordinates_of_text_for_main_menu_screen_resolution[1] + 100))
+            self.coordinates_of_text_for_main_menu_screen_resolution[1] + 95))
             display.screen.blit(self.text_for_setting_menu_sound_percentage, (
             self.coordinates_of_text_for_main_menu_selection_volume[0] + 125,
-            self.coordinates_of_text_for_main_menu_screen_resolution[1] + 105))
+            self.coordinates_of_text_for_main_menu_screen_resolution[1] + 102))
             display.screen.blit(settings_menu.text_for_setting_menu_turn_up_the_sound, (
             self.coordinates_of_text_for_main_menu_selection_volume[0] + 185,
-            self.coordinates_of_text_for_main_menu_screen_resolution[1] + 100))
+            self.coordinates_of_text_for_main_menu_screen_resolution[1] + 95))
 
 
 """"---------------------------------------------Раздел проектировки меню настроек---------------------------------------------"""
@@ -341,7 +341,7 @@ class Settings_menu(object):
         self.text_for_setting_menu_Right_Vibirator_permission = main_menu.font_for_main_menu.render(
             self.Main_menu_Button_Right_setting_change, 1, display.BLACK, display.PINCK)
 
-        self.text_for_setting_menu_set_volume = main_menu.font_for_main_menu.render(self.Main_menu_Button_set_volume, 1,
+        self.text_for_setting_menu_set_volume = main_menu.font_for_Screen_resolution_settings.render(self.Main_menu_Button_set_volume, 1,
                                                                                     display.BLACK, display.PINCK)
         self.text_for_setting_menu_turn_down_the_sound = main_menu.font_for_main_menu.render(
             self.Main_menu_Button_turn_down_the_sound, 1, display.BLACK, display.PINCK)
@@ -796,14 +796,13 @@ while True:
         # Вызов функций, отвечающих за выход из менб настроек (ПРИМЕЧАНИЕ: СЛЕДУЮЩИЙ БЛОК ФУНКЦИЙ ОБЯЗАТЕЛЬНО СТАВИТЬ В КОНЕЦ)
         settings_menu.Back_button_hovered()
         settings_menu.Back_button_pressed()
-
         settings_menu.Button_turn_down_the_sound()
         settings_menu.Button_turn_up_the_sound()
 
     if in_playing:
         playing_field.draw_field()
 
+
     # Вызов функции отрисовки текста на кнопках в главном меню
     main_menu.building_text()
-
     pygame.display.update()
