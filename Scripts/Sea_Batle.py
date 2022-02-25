@@ -431,44 +431,128 @@ class Playing_field(object):
         self.BLOCK_PLACE = [200, 200]
         #список с изменяющимися значениями координат блоков поля
         self.block_place = [200, 200]
+        #Доступна ли клетка для размещения кораблика?
+        self.accessible_area = True
+        #Цвет голограммы кораблика (Зелёный/Красный)
+        self.hologram_color = display.DARK_GREEN
 
     def one_deck_ship (self):
         pygame.draw.rect(display.screen, display.DARK_GREEN, [self.block_place, self.block_size])  
 
-    def two_deck_ship (self):
-        tmp_block_place = self.block_place
-        for x in range(2):
-            pygame.draw.rect(display.screen, display.DARK_GREEN, [tmp_block_place, self.block_size])
-            tmp_block_place[0] += self.block_side_size
-            tmp_block_place[0] += self.indent
+    def two_deck_ship (self,y):
+        if y > 8:
+            self.accessible_area = False
+        else:
+            self.accessible_area = True
+        pygame.draw.rect(display.screen, self.hologram_color, [self.block_place, self.block_size])
+        if y <= 8:
+            pygame.draw.rect(display.screen, self.hologram_color, [[self.block_place[0] + self.indent + self.block_side_size, self.block_place[1]], self.block_size])
 
-    def inv_two_deck_ship (self):
-        pygame.draw.rect(display.screen, display.DARK_GREEN, [self.block_place, self.block_size]) 
+    def inv_two_deck_ship (self, x):
+        if x > 8:
+            self.accessible_area = False
+        else:
+            self.accessible_area = True
+        pygame.draw.rect(display.screen, self.hologram_color, [self.block_place, self.block_size])
+        if x <= 8:
+            pygame.draw.rect(display.screen, self.hologram_color, [[self.block_place[0], self.block_place[1] + self.indent + self.block_side_size], self.block_size])
 
-    def three_deck_ship (self):
-        pygame.draw.rect(display.screen, display.DARK_GREEN, [self.block_place, self.block_size]) 
-    def inv_three_deck_ship (self):
-        pygame.draw.rect(display.screen, display.DARK_GREEN, [self.block_place, self.block_size]) 
+    def three_deck_ship (self,y):
+        if y > y:
+            self.accessible_area = False
+        else:
+            self.accessible_area = True
+        pygame.draw.rect(display.screen, self.hologram_color, [self.block_place, self.block_size])
+        if y <= 8:
+            pygame.draw.rect(display.screen, self.hologram_color, [[self.block_place[0] + self.indent + self.block_side_size, self.block_place[1]], self.block_size])
+        if y <= 7:
+            pygame.draw.rect(display.screen, self.hologram_color, [[self.block_place[0] + self.indent*2 + self.block_side_size*2, self.block_place[1]], self.block_size])
 
-    def four_deck_ship (self):
-        pygame.draw.rect(display.screen, display.DARK_GREEN, [self.block_place, self.block_size]) 
-    def inv_four_deck_ship (self):
-        pygame.draw.rect(display.screen, display.DARK_GREEN, [self.block_place, self.block_size])
+    def inv_three_deck_ship (self, x):
+        if x > 7:
+            self.accessible_area = False
+        else:
+            self.accessible_area = True
+        pygame.draw.rect(display.screen, self.hologram_color, [self.block_place, self.block_size])
+        if x <= 8:
+            pygame.draw.rect(display.screen, self.hologram_color, [[self.block_place[0], self.block_place[1] + self.indent + self.block_side_size], self.block_size])
+        if x <= 7:
+            pygame.draw.rect(display.screen, self.hologram_color, [[self.block_place[0], self.block_place[1] + self.indent*2 + self.block_side_size*2], self.block_size])
+
+    def four_deck_ship (self, y):
+        if y > 6:
+            self.accessible_area = False
+        else:
+            self.accessible_area = True
+        pygame.draw.rect(display.screen, self.hologram_color, [self.block_place, self.block_size])
+        if y <= 8:
+            pygame.draw.rect(display.screen, self.hologram_color, [[self.block_place[0] + self.indent + self.block_side_size, self.block_place[1]], self.block_size])
+        if y <= 7:
+            pygame.draw.rect(display.screen, self.hologram_color, [[self.block_place[0] + self.indent*2 + self.block_side_size*2, self.block_place[1]], self.block_size])
+        if y <= 6:
+            pygame.draw.rect(display.screen, self.hologram_color, [[self.block_place[0] + self.indent*3 + self.block_side_size*3, self.block_place[1]], self.block_size])
+
+    def inv_four_deck_ship (self, x):
+        if x > 6:
+            self.accessible_area = False
+        else:
+            self.accessible_area = True
+        pygame.draw.rect(display.screen, self.hologram_color, [self.block_place, self.block_size])
+        if x <= 8:
+            pygame.draw.rect(display.screen, self.hologram_color, [[self.block_place[0], self.block_place[1] + self.indent + self.block_side_size], self.block_size])
+        if x <= 7:
+            pygame.draw.rect(display.screen, self.hologram_color, [[self.block_place[0], self.block_place[1] + self.indent*2 + self.block_side_size*2], self.block_size])
+        if x <= 6:
+            pygame.draw.rect(display.screen, self.hologram_color, [[self.block_place[0], self.block_place[1] + self.indent*3 + self.block_side_size*3], self.block_size])
         
         
     def draw_field(self):
-        global mouse_pose
+        global mouse_pose, selected_ships, inv_ships
         # Отрисовываю поле 10 на 10
         for x in range(10):
             for y in range(10):
+                pygame.draw.rect(display.screen, display.LIGHT_GRAY, [self.block_place, self.block_size])
+
+                self.block_place[0] += self.block_side_size
+                self.block_place[0] += self.indent
+            #обнуляю координаты икса, чтобы начать отрисовывать следующую строчку
+            self.block_place[0] = self.BLOCK_PLACE[0]
+            self.block_place[1] += self.block_side_size
+            self.block_place[1] += self.indent
+
+        self.block_place[1] = self.BLOCK_PLACE[1]
+
+        # Отрисовываю кораблики при условии наведения мышки на клетку игрового поля
+        for x in range(10):
+            for y in range(10):
                 if self.block_place[0] <= mouse_pose[0] <= self.block_place[0] + self.block_size[0] and self.block_place[1] <= mouse_pose[1] <= self.block_place[1] + self.block_size[1]:
-                    pygame.draw.rect(display.screen, display.DARK_GREEN, [self.block_place, self.block_size])
-                    #pygame.draw.rect(display.screen, display.DARK_GREEN, [[self.block_place[0] + self.indent + self.block_side_size, self.block_place[1]], self.block_size])
-                else:
-                    #pygame.draw.rect(display.screen, display.LIGHT_GRAY, [self.block_place, self.block_size])
-                    pygame.draw.rect(display.screen, display.LIGHT_GRAY, [self.block_place, self.block_size])
+                    if selected_ships == 1:
+                        self.one_deck_ship()
+
+                    elif selected_ships == 2:
+                        if inv_ships == False:
+                            self.two_deck_ship(y)
+                        else:
+                            self.inv_two_deck_ship(x)
+
+                    elif selected_ships == 3:
+                        if inv_ships == False:
+                            self.three_deck_ship(y)
+                        else:
+                            self.inv_three_deck_ship(x)
+
+                    elif selected_ships == 4:
+                        if inv_ships == False:
+                            self.four_deck_ship(y)
+                        else:
+                            self.inv_four_deck_ship(x)
                     
- 
+                    print("x: " + str(x) + " y: " + str(y))
+                    if self.accessible_area == False:
+                        self.hologram_color = display.DARK_RED
+                    else:
+                        self.hologram_color = display.DARK_GREEN
+
                 self.block_place[0] += self.block_side_size
                 self.block_place[0] += self.indent
             #обнуляю координаты икса, чтобы начать отрисовывать следующую строчку
@@ -485,6 +569,9 @@ main_menu = Main_menu()
 playing_field = Playing_field()
 settings_menu = Settings_menu()
 
+selected_ships = 1
+inv_ships = False
+
 """"---------------------------------------------Раздел системных вызовов---------------------------------------------"""
 while True:
     #mouse_pose[0] - x позиция
@@ -495,6 +582,23 @@ while True:
 
         if ev.type == pygame.QUIT:
             pygame.quit()
+
+        elif ev.type == pygame.KEYDOWN:
+            if ev.key == pygame.K_1:
+                selected_ships = 1
+                print("1")
+            if ev.key == pygame.K_2:
+                selected_ships = 2
+                print("2")
+            if ev.key == pygame.K_3:
+                selected_ships = 3
+                print("3")
+            if ev.key == pygame.K_4:
+                selected_ships = 4
+                print("4")
+            if ev.key == pygame.K_r:
+                inv_ships = not inv_ships
+                print(inv_ships)
 
     #Логика, функционирующая пока игрок в главном меню
     if in_menu:
