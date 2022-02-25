@@ -1,10 +1,14 @@
 import pygame
+import pygame as pg
 import sys
 
 from pygame import display
 
 pygame.init()
+pygame.display.set_caption("Sea Battle")
 
+pg.mixer.music.load('Sounds/piraty-karibskogo-morja-saundtrek-hes-a-pirate-glavnaja-tema(mp3gid.me).mp3')
+pg.mixer.music.play(-1)
 """"Раздел булевых переменных, отвечающих за отображение различных вещей на дисплее игрока"""
 
 # Переменная, устанавливающая разрешение по умолчанию (если она True то разрешение ставится по умолчанию 720х720)
@@ -24,6 +28,8 @@ screen_resolution_Default = 1
 def Update_Fuking_function():
     display.__init__()
     main_menu.__init__()
+
+
 
 """"Раздел, хранящий переменные настройки дисплея (разрешение, цвет, форма шрифта и т.д.)"""
 class Display(object):
@@ -132,6 +138,12 @@ class Main_menu(object):
                 in_menu = False
                 in_playing = True
                 display.screen.fill(display.WHITE)
+
+                #Остановка музыки
+                pg.mixer.music.pause()
+                #Воспроизведение  другой
+                pg.mixer.music.load('Sounds/background.mp3')
+                pg.mixer.music.play(-1, 1)
 
 
     # Кнопка Settings
@@ -271,12 +283,14 @@ class Settings_menu(object):
         global mouse_pose
         global in_menu
         global in_settings
+        global in_playing
 
         if ev.type == pygame.MOUSEBUTTONDOWN:
             if self.draw_button_back_out_of_settings[0] <= mouse_pose[0] <= self.draw_button_back_out_of_settings[0]+self.size_button[0] and self.draw_button_back_out_of_settings[1] <= mouse_pose[1] <= self.draw_button_back_out_of_settings[1]+self.size_button[1]:
                 in_menu = True
                 # Делаю невидимым меню настроек
                 in_settings = False
+                in_playing = False
                 pygame.draw.rect(display.screen, display.WHITE, [self.draw_button_back_out_of_settings, self.size_button])
                 self.text_for_main_menu_3 = main_menu.font_for_main_menu.render(self.Main_menu_Button_back_out_of_settings, 1, display.WHITE, display.WHITE)
 
@@ -417,7 +431,7 @@ class Playing_field(object):
         self.BLOCK_PLACE = [200, 200]
         #список с изменяющимися значениями координат блоков поля
         self.block_place = [200, 200]
-    
+
     def one_deck_ship (self):
         pygame.draw.rect(display.screen, display.DARK_GREEN, [self.block_place, self.block_size])  
 
@@ -463,7 +477,7 @@ class Playing_field(object):
             self.block_place[1] += self.indent
         self.block_place[1] = self.BLOCK_PLACE[1]
 
-        
+
 
 """---------------------------------------------Объявление экземпляров класса---------------------------------------------"""
 display = Display()
@@ -513,7 +527,6 @@ while True:
 
     if in_playing:
         playing_field.draw_field()
-
 
 
     # Вызов функции отрисовки текста на кнопках в главном меню
