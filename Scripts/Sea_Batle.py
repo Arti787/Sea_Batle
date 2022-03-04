@@ -2,14 +2,17 @@ import pygame
 import pygame as pg
 import sys
 
+from tkinter import *
+from tkinter import messagebox as mb
 from pygame import display
 
 pygame.init()
 pygame.display.set_caption("Sea Battle by Sergaris and GriGA")
 
 pg.mixer.music.load('Sounds/piraty-karibskogo-morja-saundtrek-hes-a-pirate-glavnaja-tema(mp3gid.me).mp3')
+
 pg.mixer.music.play(-1)
-pg.mixer.music.set_volume(0.05)
+pg.mixer.music.set_volume(0.00)
 
 """"Раздел булевых переменных, отвечающих за отображение различных вещей на дисплее игрока"""
 
@@ -27,17 +30,120 @@ Full_screen_mode = False
 screen_resolution_Default = 1
 # Приминить значение?
 apply = False
+# Сохранены ли изменения?
+Save_Changes = False
 
-""""Раздел вызова всех Функций инициализаторов"""
+""""---------------------------------------------Раздел специальных функций---------------------------------------------"""
 
 
+# Перезапуск инициализирующих функций для применения новых настроек
 def Update_Fuking_function():
     display.__init__()
     main_menu.__init__()
+    playing_field.__init__()
 
 
 def Update_Fuking_volume():
     pg.mixer.music.set_volume(settings_menu.game_sound_Default)
+
+
+# вызов менью: -да -нет, где title - заголовок, а message - вопрос
+def checkung_change_of_user(title, message):
+    answer = mb.askyesno(
+        title=title,
+        message=message)
+    return answer
+
+
+# Отрисовка текста
+def building_text():
+    global in_playing
+    global in_settings
+    global in_menu
+    global screen_resolution_Default
+
+    # отрисовка текста в меню
+    if in_menu:
+        # отрисовка кнопок старт, настроки и выход
+        display.screen.blit(main_menu.text_for_main_menu_1,
+                            (main_menu.draw_button_play[0] + (main_menu.size_button[0] - 53) / 2,
+                             main_menu.draw_button_play[1]))
+        display.screen.blit(main_menu.text_for_main_menu_2,
+                            (main_menu.draw_button_settings[0] + (main_menu.size_button[0] - 99) / 2,
+                             main_menu.draw_button_settings[1]))
+
+        display.screen.blit(main_menu.text_for_main_menu,
+                            (main_menu.draw_button[0] + (main_menu.size_button[0] - 50) / 2, main_menu.draw_button[1]))
+
+    # отрисовка текста в настройках
+    if in_settings:
+        # Oтрисовка кнопки Back
+        display.screen.blit(settings_menu.text_for_main_menu_3, main_menu.draw_button_back)
+        # Отрисовка стрелочек выбора разрешения и текста между ними
+        display.screen.blit(settings_menu.text_for_main_menu_screen_resolution,
+                            main_menu.coordinates_of_text_for_main_menu_screen_resolution)
+        display.screen.blit(settings_menu.text_for_setting_menu_Left_Vibirator_permission, (
+            main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 200,
+            main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3))
+        display.screen.blit(settings_menu.text_for_main_menu_screen_resolution_size, (
+            main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 220,
+            main_menu.coordinates_of_text_for_main_menu_screen_resolution[1]))
+        # Отрисовка правой стрелочки выбора разрешения
+        if (screen_resolution_Default == 0) or (screen_resolution_Default == 1):
+            display.screen.blit(settings_menu.text_for_setting_menu_Right_Vibirator_permission, (
+                main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 315,
+                main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3))
+
+        if (screen_resolution_Default == 2):
+            display.screen.blit(settings_menu.text_for_setting_menu_Right_Vibirator_permission, (
+                main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 325,
+                main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3))
+
+        if (screen_resolution_Default == 3) or (screen_resolution_Default == 4):
+            display.screen.blit(settings_menu.text_for_setting_menu_Right_Vibirator_permission, (
+                main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 335,
+                main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3))
+
+        # Отрисовка текста на кнопке Apply
+        display.screen.blit(settings_menu.text_for_setting_menu_Apply,
+                            (main_menu.draw_button_back[0] + 150, main_menu.draw_button_back[1]))
+        # Отрисовка текста около выбора экранного режима
+        display.screen.blit(settings_menu.text_for_main_menu_screen_mode, (
+            main_menu.coordinates_of_text_for_main_menu_screen_resolution[0],
+            main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] + 50))
+
+        # отрисовка состояния звука
+        main_menu.text_for_setting_menu_sound_percentage = main_menu.font_for_Screen_resolution_settings.render(
+            str(round(settings_menu.game_sound_Default * 100)) + " %", 1, display.BLACK, display.PINCK)
+
+        # Отрисовка прибавления и убавления звука
+        display.screen.blit(settings_menu.text_for_setting_menu_set_volume, (
+            main_menu.coordinates_of_text_for_main_menu_selection_volume[0],
+            main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] + 100))
+        display.screen.blit(settings_menu.text_for_setting_menu_turn_down_the_sound, (
+            main_menu.coordinates_of_text_for_main_menu_selection_volume[0] + 100,
+            main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] + 95))
+        display.screen.blit(main_menu.text_for_setting_menu_sound_percentage, (
+            main_menu.coordinates_of_text_for_main_menu_selection_volume[0] + 125,
+            main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] + 102))
+        display.screen.blit(settings_menu.text_for_setting_menu_turn_up_the_sound, (
+            main_menu.coordinates_of_text_for_main_menu_selection_volume[0] + 185,
+            main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] + 95))
+
+    # отрисовка текста на игровом поле
+    if in_playing:
+        # Oтрисовка кнопки Back
+        display.screen.blit(settings_menu.text_for_main_menu_3, (
+        main_menu.draw_button_back[0] + (20 - 20 * playing_field.now_Screen_Size[1] / playing_field.now_Screen_Size[0]),
+        main_menu.draw_button_back[1] + (
+                    20 - 20 * playing_field.now_Screen_Size[1] / playing_field.now_Screen_Size[0])))
+        # Oтрисовка кнопки play
+        display.screen.blit(playing_field.text_for_Playing_field_play, (playing_field.draw_play_button[0] + 44,
+                                                                        playing_field.draw_play_button[1] + (20 - 20 *
+                                                                                                             playing_field.now_Screen_Size[
+                                                                                                                 1] /
+                                                                                                             playing_field.now_Screen_Size[
+                                                                                                                 0])))
 
 
 """"Раздел, хранящий переменные настройки дисплея (разрешение, цвет, форма шрифта и т.д.)"""
@@ -105,33 +211,34 @@ class Main_menu(object):
     def __init__(self):
         # Цвет фона главного меню
         display.screen.fill(display.WHITE)
-
         # Размеры Кнопки
         self.size_button = (140, 40)
-
         # Координаты отрисовки предметов
         self.draw_button_play = ((display.screen_width / 2) - self.size_button[0] / 2,
                                  (display.screen_height / 2) - self.size_button[1] / 2 - 60)
         self.draw_button_settings = (
-        (display.screen_width / 2) - self.size_button[0] / 2, (display.screen_height / 2) - self.size_button[1] / 2 + 0)
+            (display.screen_width / 2) - self.size_button[0] / 2,
+            (display.screen_height / 2) - self.size_button[1] / 2 + 0)
         self.draw_button = ((display.screen_width / 2) - self.size_button[0] / 2,
                             (display.screen_height / 2) - self.size_button[1] / 2 + 60)
         self.draw_button_back = (48, 10)
-
         # Координаты отрисовки предметов (та штука, что идёт следом очень важна для отрисовки почти всего меню настроек на основе её координат были спроектированы другие элементы раздела настроек)
         self.coordinates_of_text_for_main_menu_screen_resolution = (25, 70)
         self.coordinates_of_text_for_main_menu_selection_volume = (
-        self.coordinates_of_text_for_main_menu_screen_resolution[0],
-        self.coordinates_of_text_for_main_menu_screen_resolution[1] + 80)
-
+            self.coordinates_of_text_for_main_menu_screen_resolution[0],
+            self.coordinates_of_text_for_main_menu_screen_resolution[1] + 80)
         # Шрифтовые переменные и их свойства
         self.font_for_main_menu = pygame.font.SysFont('arial', 33)
         self.font_for_Screen_resolution_settings = pygame.font.SysFont('arial', 25)
-
         # Текст, приминяемый в функции
         self.Main_menu_Button_play = "Play"
         self.Main_menu_Button_settings = "Settings"
         self.Main_menu_Button_Quit = "Quit"
+
+        self.Text_for_quit_the_game_title = "Exit the game"
+        self.Text_for_quit_the_game_message = "Already leaving?"
+
+        self.check = False
 
     # Кнопка Play
     def Start_button_hovered(self):
@@ -212,76 +319,12 @@ class Main_menu(object):
         if ev.type == pygame.MOUSEBUTTONDOWN:
             if self.draw_button[0] <= mouse_pose[0] <= self.draw_button[0] + self.size_button[0] and self.draw_button[
                 1] <= mouse_pose[1] <= self.draw_button[1] + self.size_button[1]:
-                pygame.quit()
 
-    # Отрисовка текста в главном меню
-    def building_text(self):
-        global in_settings
-        global in_menu
-        global screen_resolution_Default
+                self.check = checkung_change_of_user(self.Text_for_quit_the_game_title,
+                                                     self.Text_for_quit_the_game_message)
 
-        if in_menu:
-            # отрисовка кнопок старт, настроки и выход
-            display.screen.blit(self.text_for_main_menu_1,
-                                (self.draw_button_play[0] + (self.size_button[0] - 53) / 2, self.draw_button_play[1]))
-            display.screen.blit(self.text_for_main_menu_2, (
-            self.draw_button_settings[0] + (self.size_button[0] - 99) / 2, self.draw_button_settings[1]))
-            display.screen.blit(self.text_for_main_menu,
-                                (self.draw_button[0] + (self.size_button[0] - 50) / 2, self.draw_button[1]))
-
-        if in_settings:
-            # Oтрисовка кнопки Back
-            display.screen.blit(settings_menu.text_for_main_menu_3, self.draw_button_back)
-            # Отрисовка стрелочек выбора разрешения и текста между ними
-            display.screen.blit(settings_menu.text_for_main_menu_screen_resolution,
-                                self.coordinates_of_text_for_main_menu_screen_resolution)
-            display.screen.blit(settings_menu.text_for_setting_menu_Left_Vibirator_permission, (
-            self.coordinates_of_text_for_main_menu_screen_resolution[0] + 200,
-            self.coordinates_of_text_for_main_menu_screen_resolution[1] - 3))
-            display.screen.blit(settings_menu.text_for_main_menu_screen_resolution_size, (
-            self.coordinates_of_text_for_main_menu_screen_resolution[0] + 220,
-            self.coordinates_of_text_for_main_menu_screen_resolution[1]))
-            # Отрисовка правой стрелочки выбора разрешения
-            if (screen_resolution_Default == 0) or (screen_resolution_Default == 1):
-                display.screen.blit(settings_menu.text_for_setting_menu_Right_Vibirator_permission, (
-                self.coordinates_of_text_for_main_menu_screen_resolution[0] + 315,
-                self.coordinates_of_text_for_main_menu_screen_resolution[1] - 3))
-
-            if (screen_resolution_Default == 2):
-                display.screen.blit(settings_menu.text_for_setting_menu_Right_Vibirator_permission, (
-                self.coordinates_of_text_for_main_menu_screen_resolution[0] + 325,
-                self.coordinates_of_text_for_main_menu_screen_resolution[1] - 3))
-
-            if (screen_resolution_Default == 3) or (screen_resolution_Default == 4):
-                display.screen.blit(settings_menu.text_for_setting_menu_Right_Vibirator_permission, (
-                self.coordinates_of_text_for_main_menu_screen_resolution[0] + 335,
-                self.coordinates_of_text_for_main_menu_screen_resolution[1] - 3))
-
-            # Отрисовка текста на кнопке Apply
-            display.screen.blit(settings_menu.text_for_setting_menu_Apply,
-                                (self.draw_button_back[0] + 150, self.draw_button_back[1]))
-            # Отрисовка текста около выбора экранного режима
-            display.screen.blit(settings_menu.text_for_main_menu_screen_mode, (
-            self.coordinates_of_text_for_main_menu_screen_resolution[0],
-            self.coordinates_of_text_for_main_menu_screen_resolution[1] + 50))
-
-            # отрисовка состояния звука
-            self.text_for_setting_menu_sound_percentage = main_menu.font_for_Screen_resolution_settings.render(
-                str(round(settings_menu.game_sound_Default * 100)) + " %", 1, display.BLACK, display.PINCK)
-
-            # Отрисовка прибавления и убавления звука
-            display.screen.blit(settings_menu.text_for_setting_menu_set_volume, (
-            self.coordinates_of_text_for_main_menu_selection_volume[0],
-            self.coordinates_of_text_for_main_menu_screen_resolution[1] + 100))
-            display.screen.blit(settings_menu.text_for_setting_menu_turn_down_the_sound, (
-            self.coordinates_of_text_for_main_menu_selection_volume[0] + 100,
-            self.coordinates_of_text_for_main_menu_screen_resolution[1] + 95))
-            display.screen.blit(self.text_for_setting_menu_sound_percentage, (
-            self.coordinates_of_text_for_main_menu_selection_volume[0] + 125,
-            self.coordinates_of_text_for_main_menu_screen_resolution[1] + 102))
-            display.screen.blit(settings_menu.text_for_setting_menu_turn_up_the_sound, (
-            self.coordinates_of_text_for_main_menu_selection_volume[0] + 185,
-            self.coordinates_of_text_for_main_menu_screen_resolution[1] + 95))
+                if self.check:
+                    pygame.quit()
 
 
 """"---------------------------------------------Раздел проектировки меню настроек---------------------------------------------"""
@@ -294,6 +337,7 @@ class Settings_menu(object):
 
     def __init__(self):
         global screen_resolution_Default
+
         # Координаты отрисовки предметов
         self.draw_button_back_out_of_settings = (10, 10)
         self.draw_button_sweech__screen_mode = (main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 170,
@@ -316,6 +360,9 @@ class Settings_menu(object):
         self.Main_menu_Button_turn_down_the_sound = "-"
         self.Main_menu_Button_turn_up_the_sound = "+"
 
+        self.Text_for_messagebox_title = "Changing game settings"
+        self.Text_for_messagebox_message = "Apply Changes?"
+
         # Дефолтные настройки
         screen_resolution_Default = 1
 
@@ -327,7 +374,7 @@ class Settings_menu(object):
         self.size_button_swich_screen_mode = (30, 30)
 
         self.size_button_sound_selection = (
-        self.size_button_resolution_selection[0], self.size_button_resolution_selection[1])
+            self.size_button_resolution_selection[0], self.size_button_resolution_selection[1])
 
         # Текст и его свойства, передаваемые в функцию building_text
         self.text_for_main_menu_3 = main_menu.font_for_main_menu.render(self.Main_menu_Button_back_out_of_settings, 1,
@@ -341,8 +388,9 @@ class Settings_menu(object):
         self.text_for_setting_menu_Right_Vibirator_permission = main_menu.font_for_main_menu.render(
             self.Main_menu_Button_Right_setting_change, 1, display.BLACK, display.PINCK)
 
-        self.text_for_setting_menu_set_volume = main_menu.font_for_Screen_resolution_settings.render(self.Main_menu_Button_set_volume, 1,
-                                                                                    display.BLACK, display.PINCK)
+        self.text_for_setting_menu_set_volume = main_menu.font_for_Screen_resolution_settings.render(
+            self.Main_menu_Button_set_volume, 1,
+            display.BLACK, display.PINCK)
         self.text_for_setting_menu_turn_down_the_sound = main_menu.font_for_main_menu.render(
             self.Main_menu_Button_turn_down_the_sound, 1, display.BLACK, display.PINCK)
         self.text_for_setting_menu_turn_up_the_sound = main_menu.font_for_main_menu.render(
@@ -371,30 +419,66 @@ class Settings_menu(object):
         global in_playing
         global apply
 
+        global Save_Changes
+
         if ev.type == pygame.MOUSEBUTTONDOWN:
             if self.draw_button_back_out_of_settings[0] <= mouse_pose[0] <= self.draw_button_back_out_of_settings[0] + \
                     self.size_button[0] and self.draw_button_back_out_of_settings[1] <= mouse_pose[1] <= \
                     self.draw_button_back_out_of_settings[1] + self.size_button[1]:
-                in_menu = True
-                # Делаю невидимым меню настроек
-                in_settings = False
-                in_playing = False
-                pygame.draw.rect(display.screen, display.WHITE,
-                                 [self.draw_button_back_out_of_settings, self.size_button])
-                self.text_for_main_menu_3 = main_menu.font_for_main_menu.render(
-                    self.Main_menu_Button_back_out_of_settings, 1, display.WHITE, display.WHITE)
 
-                display.screen.fill(display.WHITE)
+                if Save_Changes:
+                    slave = checkung_change_of_user(self.Text_for_messagebox_title, self.Text_for_messagebox_message)
+                else:
+                    slave = False
 
-                if apply == False:
-                    self.game_sound_Default = main_menu.temporary_storage_of_sound_level
-                    Update_Fuking_volume()
-                apply = False
+                if slave:
+
+                    # приминяю текущие настройки
+                    self.temporary_storage_of_sound_level = settings_menu.game_sound_Default
+                    Update_Fuking_function()
+                    apply = True
+
+                    display.res = (display.Standard_Screen_Size[screen_resolution_Default])
+                    if apply == False:
+                        self.game_sound_Default = main_menu.temporary_storage_of_sound_level
+                        Update_Fuking_volume()
+                    apply = False
+
+                    in_menu = True
+                    # Делаю невидимым меню настроек
+                    in_settings = False
+                    in_playing = False
+                    pygame.draw.rect(display.screen, display.WHITE,
+                                     [self.draw_button_back_out_of_settings, self.size_button])
+                    self.text_for_main_menu_3 = main_menu.font_for_main_menu.render(
+                        self.Main_menu_Button_back_out_of_settings, 1, display.WHITE, display.WHITE)
+
+                    display.screen.fill(display.WHITE)
+
+                else:
+
+                    display.res = (display.Standard_Screen_Size[screen_resolution_Default])
+                    if apply == False:
+                        self.game_sound_Default = main_menu.temporary_storage_of_sound_level
+                        Update_Fuking_volume()
+                    apply = False
+
+                    in_menu = True
+                    # Делаю невидимым меню настроек
+                    in_settings = False
+                    in_playing = False
+                    pygame.draw.rect(display.screen, display.WHITE,
+                                     [self.draw_button_back_out_of_settings, self.size_button])
+                    self.text_for_main_menu_3 = main_menu.font_for_main_menu.render(
+                        self.Main_menu_Button_back_out_of_settings, 1, display.WHITE, display.WHITE)
+
+                    display.screen.fill(display.WHITE)
 
     # "Ползунки" смены разрешения
     def Left_setting_change_button_pressed(self):
         global mouse_pose
         global screen_resolution_Default
+        global Save_Changes
 
         if ev.type == pygame.MOUSEBUTTONDOWN:
 
@@ -404,6 +488,8 @@ class Settings_menu(object):
                     main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3 <= mouse_pose[1] <= \
                     main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3 + \
                     self.size_button_resolution_selection[1]:
+                Save_Changes = True
+
                 if screen_resolution_Default != 0:
                     screen_resolution_Default = screen_resolution_Default - 1
 
@@ -442,6 +528,7 @@ class Settings_menu(object):
     def Right_setting_change_button_pressed(self):
         global mouse_pose
         global screen_resolution_Default
+        global Save_Changes
 
         if ev.type == pygame.MOUSEBUTTONDOWN:
 
@@ -452,6 +539,8 @@ class Settings_menu(object):
                     main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3 <= mouse_pose[1] <= \
                     main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3 + \
                     self.size_button_resolution_selection[1]:
+
+                Save_Changes = True
 
                 if screen_resolution_Default != 4:
                     screen_resolution_Default = screen_resolution_Default + 1
@@ -517,6 +606,7 @@ class Settings_menu(object):
     def switch_screen_mode_pressed(self):
         global mouse_pose
         global Full_screen_mode
+        global Save_Changes
 
         if ev.type == pygame.MOUSEBUTTONDOWN:
             if Full_screen_mode:
@@ -524,11 +614,14 @@ class Settings_menu(object):
                         self.size_button_swich_screen_mode[0] and self.draw_button_sweech__screen_mode[1] <= mouse_pose[
                     1] <= self.draw_button_sweech__screen_mode[1] + self.size_button_swich_screen_mode[1]:
                     Full_screen_mode = False
+                    Save_Changes = True
+
             else:
                 if self.draw_button_sweech__screen_mode[0] <= mouse_pose[0] <= self.draw_button_sweech__screen_mode[0] + \
                         self.size_button_swich_screen_mode[0] and self.draw_button_sweech__screen_mode[1] <= mouse_pose[
                     1] <= self.draw_button_sweech__screen_mode[1] + self.size_button_swich_screen_mode[1]:
                     Full_screen_mode = True
+                    Save_Changes = True
 
     # Кнопка "применить"
     def Apply_button_hovered(self):
@@ -551,27 +644,32 @@ class Settings_menu(object):
         global mouse_pose
         global screen_resolution_Default
         global apply
+        global Save_Changes
         if ev.type == pygame.MOUSEBUTTONDOWN:
             if main_menu.draw_button_back[0] + 150 <= mouse_pose[0] <= main_menu.draw_button_back[0] + 150 + \
                     self.size_button[0] and main_menu.draw_button_back[1] <= mouse_pose[1] <= \
                     main_menu.draw_button_back[1] + self.size_button[1]:
-                display.res = (display.Standard_Screen_Size[screen_resolution_Default])
-                Update_Fuking_function()
-
                 self.temporary_storage_of_sound_level = settings_menu.game_sound_Default
+                Update_Fuking_function()
                 apply = True
+                Save_Changes = False
 
     # "Ползунки" смены уровня звука
     def Button_turn_down_the_sound(self):
+        global Save_Changes
         global mouse_pose
         global screen_resolution_Default
+
         if ev.type == pygame.MOUSEBUTTONDOWN:
             if main_menu.coordinates_of_text_for_main_menu_selection_volume[0] + 100 <= mouse_pose[0] <= \
                     main_menu.coordinates_of_text_for_main_menu_selection_volume[0] + 100 + \
                     self.size_button_sound_selection[0] and \
-                    main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] <= mouse_pose[1] <= \
+                    main_menu.coordinates_of_text_for_main_menu_selection_volume[1] + 30 <= mouse_pose[1] <= \
                     main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] + 100 + \
                     self.size_button_sound_selection[1]:
+
+                Save_Changes = True
+
                 if self.game_sound_Default > 0:
                     self.game_sound_Default -= 0.01
                     Update_Fuking_volume()
@@ -579,33 +677,70 @@ class Settings_menu(object):
     def Button_turn_up_the_sound(self):
         global mouse_pose
         global screen_resolution_Default
+        global Save_Changes
+
         if ev.type == pygame.MOUSEBUTTONDOWN:
             if main_menu.coordinates_of_text_for_main_menu_selection_volume[0] + 185 <= mouse_pose[0] <= \
                     main_menu.coordinates_of_text_for_main_menu_selection_volume[0] + 185 + \
                     self.size_button_sound_selection[0] and \
-                    main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] <= mouse_pose[1] <= \
+                    main_menu.coordinates_of_text_for_main_menu_selection_volume[1] + 30 <= mouse_pose[1] <= \
                     main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] + 100 + \
                     self.size_button_sound_selection[1]:
+
+                Save_Changes = True
+
                 if self.game_sound_Default < 1:
                     self.game_sound_Default += 0.01
                     Update_Fuking_volume()
 
 
 """"---------------------------------------------Раздел проектировки игргового поля---------------------------------------------"""
+
+
 class Playing_field(object):
     def __init__(self):
-        self.block_side_size = 25
+
+        self.now_Screen_Size = (display.Standard_Screen_Size[screen_resolution_Default])
+
+        # Размеры кнопок
+        self.size_button_from_settings_menu = (
+        main_menu.size_button[0] + (25 - 25 * self.now_Screen_Size[1] / self.now_Screen_Size[0]),
+        main_menu.size_button[1] + (25 - 25 * self.now_Screen_Size[1] / self.now_Screen_Size[0]))
+        self.button_side_size = 40
+        self.block_side_size = 25 + (25 - (25 * self.now_Screen_Size[1] / self.now_Screen_Size[0]))
         self.block_size = (self.block_side_size, self.block_side_size)
+        self.size_button = (self.button_side_size - 25 + self.block_side_size,
+                            self.button_side_size - 25 + self.block_side_size)  # размер для кнопок с картинками
         # Отступ
         self.indent = 2
-        #список с постоянными значениями координат блоков поля
-        self.BLOCK_PLACE = [200, 200]
-        #список с изменяющимися значениями координат блоков поля
-        self.block_place = [200, 200]
-        #Доступна ли клетка для размещения кораблика?
+        # список с постоянными значениями координат блоков поля
+        self.BLOCK_PLACE = [display.res[0] * (1 / 5), 100]
+        # список с изменяющимися значениями координат блоков поля
+        self.block_place = [display.res[0] * (1 / 5), 100]
+        # Доступна ли клетка для размещения кораблика?
         self.accessible_area = True
-        #Цвет голограммы кораблика (Зелёный/Красный)
+        # Цвет голограммы кораблика (Зелёный/Красный)
         self.hologram_color = display.DARK_GREEN
+
+        #Название файла сохранения расстановки корабликов
+        self.preset_name = 'save_1'
+
+        #Путь + название + разширение файла расстановки корабликов
+        self.preset_way = 'ships_preset\{0}.txt'.format(self.preset_name)
+
+        #Список с данные о координатах и виде кораблика для сохранения
+        self.save_ships_log = []
+
+        self.i = 0
+
+        #Инициализация и открытие файла сохранения
+        self.ships_preset = open(self.preset_way,'w')
+
+        # Координаты отрисовки кнопок
+        self.draw_load_button = (display.res[0] * (1 / 3), 10)
+        self.draw_save_button = (self.draw_load_button[0] + 50 - 25 + self.block_side_size, self.draw_load_button[1])
+        self.draw_play_button = (self.draw_load_button[0] + 100 - 25 + self.block_side_size + (
+                    25 - (25 * self.now_Screen_Size[1] / self.now_Screen_Size[0])), self.draw_load_button[1])
 
     def one_deck_ship (self):
         pygame.draw.rect(display.screen, display.DARK_GREEN, [self.block_place, self.block_size])  
@@ -663,6 +798,8 @@ class Playing_field(object):
         if y <= 6:
             pygame.draw.rect(display.screen, self.hologram_color, [[self.block_place[0] + self.indent*3 + self.block_side_size*3, self.block_place[1]], self.block_size])
 
+
+
     def inv_four_deck_ship (self, x):
         if x > 6:
             self.accessible_area = False
@@ -675,14 +812,14 @@ class Playing_field(object):
             pygame.draw.rect(display.screen, self.hologram_color, [[self.block_place[0], self.block_place[1] + self.indent*2 + self.block_side_size*2], self.block_size])
         if x <= 6:
             pygame.draw.rect(display.screen, self.hologram_color, [[self.block_place[0], self.block_place[1] + self.indent*3 + self.block_side_size*3], self.block_size])
-        
-        
+
     def draw_field(self):
         global mouse_pose, selected_ships, inv_ships
         # Отрисовываю поле 10 на 10
         for x in range(10):
             for y in range(10):
                 pygame.draw.rect(display.screen, display.LIGHT_GRAY, [self.block_place, self.block_size])
+                        
 
                 self.block_place[0] += self.block_side_size
                 self.block_place[0] += self.indent
@@ -699,26 +836,69 @@ class Playing_field(object):
                 if self.block_place[0] <= mouse_pose[0] <= self.block_place[0] + self.block_size[0] and self.block_place[1] <= mouse_pose[1] <= self.block_place[1] + self.block_size[1]:
                     if selected_ships == 1:
                         self.one_deck_ship()
+                        if ev.type == pygame.MOUSEBUTTONDOWN and self.accessible_area == True:
+                            self.i += 1
+                            if self.i  == 1: self.save_ships_log.append("{0}{1}{2}".format(x,y,1))
+                            #print(self.save_ships_log)
+                        if ev.type == pygame.MOUSEBUTTONUP:
+                            self.i = 0
 
                     elif selected_ships == 2:
                         if inv_ships == False:
                             self.two_deck_ship(y)
+                            if ev.type == pygame.MOUSEBUTTONDOWN and self.accessible_area == True:
+                                self.i += 1
+                                if self.i  == 1: self.save_ships_log.append("{0}{1}{2}".format(x,y,2))
+                                #print(self.save_ships_log)
+                            if ev.type == pygame.MOUSEBUTTONUP:
+                                self.i = 0
                         else:
                             self.inv_two_deck_ship(x)
+                            if ev.type == pygame.MOUSEBUTTONDOWN and self.accessible_area == True:
+                                self.i += 1
+                                if self.i  == 1: self.save_ships_log.append("{0}{1}{2}".format(x,y,3))
+                                #print(self.save_ships_log)
+                            if ev.type == pygame.MOUSEBUTTONUP:
+                                self.i = 0
 
                     elif selected_ships == 3:
                         if inv_ships == False:
                             self.three_deck_ship(y)
+                            if ev.type == pygame.MOUSEBUTTONDOWN and self.accessible_area == True:
+                                self.i += 1
+                                if self.i  == 1: self.save_ships_log.append("{0}{1}{2}".format(x,y,4))
+                                #print(self.save_ships_log)
+                            if ev.type == pygame.MOUSEBUTTONUP:
+                                self.i = 0
                         else:
                             self.inv_three_deck_ship(x)
+                            if ev.type == pygame.MOUSEBUTTONDOWN and self.accessible_area == True:
+                                self.i += 1
+                                if self.i  == 1: self.save_ships_log.append("{0}{1}{2}".format(x,y,5))
+                                #print(self.save_ships_log)
+                            if ev.type == pygame.MOUSEBUTTONUP:
+                                self.i = 0
 
                     elif selected_ships == 4:
                         if inv_ships == False:
                             self.four_deck_ship(y)
+                            if ev.type == pygame.MOUSEBUTTONDOWN and self.accessible_area == True:
+                                self.i += 1
+                                if self.i  == 1: self.save_ships_log.append("{0}{1}{2}".format(x,y,6))
+                                #print(self.save_ships_log)
+                            if ev.type == pygame.MOUSEBUTTONUP:
+                                self.i = 0
+                                    
                         else:
                             self.inv_four_deck_ship(x)
+                            if ev.type == pygame.MOUSEBUTTONDOWN and self.accessible_area == True:
+                                self.i += 1
+                                if self.i  == 1: self.save_ships_log.append("{0}{1}{2}".format(x,y,7))
+                                #print(self.save_ships_log)
+                            if ev.type == pygame.MOUSEBUTTONUP:
+                                self.i = 0
                     
-                    print("x: " + str(x) + " y: " + str(y))
+                    #print("x: " + str(x) + " y: " + str(y))
                     if self.accessible_area == False:
                         self.hologram_color = display.DARK_RED
                     else:
@@ -732,6 +912,141 @@ class Playing_field(object):
             self.block_place[1] += self.indent
         self.block_place[1] = self.BLOCK_PLACE[1]
 
+        #Отрисовываю поставленные кораблики
+        for n in range(len(self.save_ships_log)):
+            for x in range(10):
+                for y in range(10):
+                    #print("{0} = {1} + {2} + {3}".format(self.save_ships_log[n], self.save_ships_log[n][0], self.save_ships_log[n][1] ,self.save_ships_log[n][2]))
+                    if x == int(self.save_ships_log[n][0]) and y == int(self.save_ships_log[n][1]):
+                        #print("log_x: {0} x: {1} log_y: {2} y: {3}".format(self.save_ships_log[n][0], x, self.save_ships_log[n][1], y))
+                        if int(self.save_ships_log[n][2]) == 1:
+                            pygame.draw.rect(display.screen, display.TEAL, [self.block_place, self.block_size])
+                        if int(self.save_ships_log[n][2]) == 2:
+                            pygame.draw.rect(display.screen, display.TEAL, [self.block_place, self.block_size])
+                            pygame.draw.rect(display.screen, display.TEAL, [[self.block_place[0] + self.indent + self.block_side_size, self.block_place[1]], self.block_size])
+                        if int(self.save_ships_log[n][2]) == 3:
+                            pygame.draw.rect(display.screen, display.TEAL, [self.block_place, self.block_size])
+                            pygame.draw.rect(display.screen, display.TEAL, [[self.block_place[0], self.block_place[1] + self.indent + self.block_side_size], self.block_size])
+                        if int(self.save_ships_log[n][2]) == 4:
+                            pygame.draw.rect(display.screen, display.TEAL, [self.block_place, self.block_size])
+                            for c in range(2):
+                                pygame.draw.rect(display.screen, display.TEAL, [[self.block_place[0] + self.indent * (c+1) + self.block_side_size * (c+1), self.block_place[1]], self.block_size])
+                        if int(self.save_ships_log[n][2]) == 5:
+                            pygame.draw.rect(display.screen, display.TEAL, [self.block_place, self.block_size])
+                            for c in range(2):
+                                pygame.draw.rect(display.screen, display.TEAL, [[self.block_place[0], self.block_place[1] + self.indent * (c+1) + self.block_side_size * (c+1)], self.block_size])
+                        if int(self.save_ships_log[n][2]) == 6:
+                            pygame.draw.rect(display.screen, display.TEAL, [self.block_place, self.block_size])
+                            for c in range(3):
+                                pygame.draw.rect(display.screen, display.TEAL, [[self.block_place[0] + self.indent * (c+1) + self.block_side_size * (c+1), self.block_place[1]], self.block_size])
+                        if int(self.save_ships_log[n][2]) == 7:
+                            pygame.draw.rect(display.screen, display.TEAL, [self.block_place, self.block_size])
+                            for c in range(3):
+                                pygame.draw.rect(display.screen, display.TEAL, [[self.block_place[0], self.block_place[1] + self.indent * (c+1) + self.block_side_size * (c+1)], self.block_size])
+    
+                    self.block_place[0] += self.block_side_size
+                    self.block_place[0] += self.indent
+                #обнуляю координаты икса, чтобы начать отрисовывать следующую строчку
+                self.block_place[0] = self.BLOCK_PLACE[0]
+                self.block_place[1] += self.block_side_size
+                self.block_place[1] += self.indent
+
+            self.block_place[1] = self.BLOCK_PLACE[1]
+
+    # Кнопка Back
+    def Back_button_pressed_in_playing(self):
+        global mouse_pose
+        global in_menu
+        global in_settings
+        global in_playing
+        global apply
+
+        # Кнопка back
+        if ev.type == pygame.MOUSEBUTTONDOWN:
+            if settings_menu.draw_button_back_out_of_settings[0] <= mouse_pose[0] <= \
+                    settings_menu.draw_button_back_out_of_settings[0] + self.size_button_from_settings_menu[0] and \
+                    settings_menu.draw_button_back_out_of_settings[1] <= mouse_pose[1] <= \
+                    settings_menu.draw_button_back_out_of_settings[1] + self.size_button_from_settings_menu[1]:
+                # Делаю невидимым меню настроек
+                in_settings = False
+                in_playing = False
+                in_menu = True
+                pygame.draw.rect(display.screen, display.WHITE,
+                                 [settings_menu.draw_button_back_out_of_settings, self.size_button_from_settings_menu])
+                settings_menu.text_for_main_menu_3 = main_menu.font_for_main_menu.render(
+                    settings_menu.Main_menu_Button_back_out_of_settings, 1, display.WHITE, display.WHITE)
+                display.screen.fill(display.WHITE)
+
+    def Back_button_hovered_in_playing(self):
+        global mouse_pose
+
+        if settings_menu.draw_button_back_out_of_settings[0] <= mouse_pose[0] <= \
+                settings_menu.draw_button_back_out_of_settings[0] + \
+                self.size_button_from_settings_menu[0] and settings_menu.draw_button_back_out_of_settings[1] <= \
+                mouse_pose[1] <= \
+                settings_menu.draw_button_back_out_of_settings[1] + self.size_button_from_settings_menu[1]:
+            pygame.draw.rect(display.screen, display.LIGHT_GRAY,
+                             [settings_menu.draw_button_back_out_of_settings, self.size_button_from_settings_menu])
+            settings_menu.text_for_main_menu_3 = main_menu.font_for_main_menu.render(
+                settings_menu.Main_menu_Button_back_out_of_settings,
+                1, display.WHITE, display.LIGHT_GRAY)
+        else:
+            pygame.draw.rect(display.screen, display.GRAY,
+                             [settings_menu.draw_button_back_out_of_settings, self.size_button_from_settings_menu])
+            settings_menu.text_for_main_menu_3 = main_menu.font_for_main_menu.render(
+                settings_menu.Main_menu_Button_back_out_of_settings,
+                1, display.WHITE, display.GRAY)
+
+    # Кнопка открытия проводника
+    def load_button_hovered_in_playing(self):
+        global mouse_pose
+        global in_menu
+        global in_settings
+        global in_playing
+        global apply
+
+        if self.draw_load_button[0] <= mouse_pose[0] <= self.draw_load_button[0] + self.size_button[0] and \
+                self.draw_load_button[1] <= mouse_pose[1] <= self.draw_load_button[1] + self.size_button[1]:
+            pygame.draw.rect(display.screen, display.LIGHT_GRAY, [self.draw_load_button, self.size_button])
+
+        else:
+            pygame.draw.rect(display.screen, display.GRAY, [self.draw_load_button, self.size_button])
+
+    # Кнопка Сохрания планеровки в файловую систему
+    def save_button_hovered_in_playing(self):
+        global mouse_pose
+        global in_menu
+        global in_settings
+        global in_playing
+        global apply
+
+        if self.draw_save_button[0] <= mouse_pose[0] <= self.draw_save_button[0] + self.size_button[0] and \
+                self.draw_save_button[1] <= mouse_pose[1] <= self.draw_save_button[1] + self.size_button[1]:
+            pygame.draw.rect(display.screen, display.LIGHT_GRAY, [self.draw_save_button, self.size_button])
+
+        else:
+            pygame.draw.rect(display.screen, display.GRAY, [self.draw_save_button, self.size_button])
+
+    # Кнопка play
+    def play_button_hovered_in_playing(self):
+        global mouse_pose
+        global in_menu
+        global in_settings
+        global in_playing
+        global apply
+
+        if self.draw_play_button[0] <= mouse_pose[0] <= self.draw_play_button[0] + self.size_button_from_settings_menu[
+            0] and self.draw_play_button[1] <= mouse_pose[1] <= self.draw_play_button[1] + \
+                self.size_button_from_settings_menu[1]:
+            pygame.draw.rect(display.screen, display.LIGHT_GRAY,
+                             [self.draw_play_button, self.size_button_from_settings_menu])
+            self.text_for_Playing_field_play = main_menu.font_for_main_menu.render(main_menu.Main_menu_Button_play, 1,
+                                                                                   display.WHITE, display.LIGHT_GRAY)
+
+        else:
+            pygame.draw.rect(display.screen, display.GRAY, [self.draw_play_button, self.size_button_from_settings_menu])
+            self.text_for_Playing_field_play = main_menu.font_for_main_menu.render(main_menu.Main_menu_Button_play, 1,
+                                                                                   display.WHITE, display.GRAY)
 
 
 """---------------------------------------------Объявление экземпляров класса---------------------------------------------"""
@@ -745,8 +1060,8 @@ inv_ships = False
 
 """"---------------------------------------------Раздел системных вызовов---------------------------------------------"""
 while True:
-    #mouse_pose[0] - x позиция
-    #mouse_pose[1] - y позиция
+    # mouse_pose[0] - x позиция
+    # mouse_pose[1] - y позиция
     mouse_pose = pygame.mouse.get_pos()
 
     for ev in pygame.event.get():
@@ -801,8 +1116,12 @@ while True:
 
     if in_playing:
         playing_field.draw_field()
-
+        playing_field.load_button_hovered_in_playing()
+        playing_field.save_button_hovered_in_playing()
+        playing_field.play_button_hovered_in_playing()
+        playing_field.Back_button_hovered_in_playing()
+        playing_field.Back_button_pressed_in_playing()
 
     # Вызов функции отрисовки текста на кнопках в главном меню
-    main_menu.building_text()
+    building_text()
     pygame.display.update()
