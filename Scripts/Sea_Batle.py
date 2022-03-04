@@ -33,7 +33,7 @@ apply = False
 
 """"---------------------------------------------Раздел специальных функций---------------------------------------------"""
 
-
+# Перезапуск инициализирующих функций для применения новых настроек
 def Update_Fuking_function():
     display.__init__()
     main_menu.__init__()
@@ -43,13 +43,86 @@ def Update_Fuking_volume():
     pg.mixer.music.set_volume(settings_menu.game_sound_Default)
 
 
-# вызов менью: Уже уходите? -да -нет
+# вызов менью: -да -нет, где title - заголовок, а message - вопрос
 def checkung_change_of_user(title, message):
 
     answer = mb.askyesno(
         title=title,
         message=message)
     return answer
+
+#Отрисовка текста
+def building_text():
+        global in_settings
+        global in_menu
+        global screen_resolution_Default
+
+        #отрисовка текста в меню
+        if in_menu:
+            # отрисовка кнопок старт, настроки и выход
+            display.screen.blit(main_menu.text_for_main_menu_1,
+                                (main_menu.draw_button_play[0] + (main_menu.size_button[0] - 53) / 2, main_menu.draw_button_play[1]))
+            display.screen.blit(main_menu.text_for_main_menu_2,
+                                (main_menu.draw_button_settings[0] + (main_menu.size_button[0] - 99) / 2, main_menu.draw_button_settings[1]))
+
+            display.screen.blit(main_menu.text_for_main_menu,
+                                (main_menu.draw_button[0] + (main_menu.size_button[0] - 50) / 2, main_menu.draw_button[1]))
+
+        #отрисовка текста в настройках
+        if in_settings:
+            # Oтрисовка кнопки Back
+            display.screen.blit(settings_menu.text_for_main_menu_3, main_menu.draw_button_back)
+            # Отрисовка стрелочек выбора разрешения и текста между ними
+            display.screen.blit(settings_menu.text_for_main_menu_screen_resolution,
+                                main_menu.coordinates_of_text_for_main_menu_screen_resolution)
+            display.screen.blit(settings_menu.text_for_setting_menu_Left_Vibirator_permission, (
+            main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 200,
+            main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3))
+            display.screen.blit(settings_menu.text_for_main_menu_screen_resolution_size, (
+            main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 220,
+            main_menu.coordinates_of_text_for_main_menu_screen_resolution[1]))
+            # Отрисовка правой стрелочки выбора разрешения
+            if (screen_resolution_Default == 0) or (screen_resolution_Default == 1):
+                display.screen.blit(settings_menu.text_for_setting_menu_Right_Vibirator_permission, (
+                main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 315,
+                main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3))
+
+            if (screen_resolution_Default == 2):
+                display.screen.blit(settings_menu.text_for_setting_menu_Right_Vibirator_permission, (
+                main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 325,
+                main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3))
+
+            if (screen_resolution_Default == 3) or (screen_resolution_Default == 4):
+                display.screen.blit(settings_menu.text_for_setting_menu_Right_Vibirator_permission, (
+                main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 335,
+                main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3))
+
+            # Отрисовка текста на кнопке Apply
+            display.screen.blit(settings_menu.text_for_setting_menu_Apply,
+                                (main_menu.draw_button_back[0] + 150, main_menu.draw_button_back[1]))
+            # Отрисовка текста около выбора экранного режима
+            display.screen.blit(settings_menu.text_for_main_menu_screen_mode, (
+            main_menu.coordinates_of_text_for_main_menu_screen_resolution[0],
+            main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] + 50))
+
+            # отрисовка состояния звука
+            main_menu.text_for_setting_menu_sound_percentage = main_menu.font_for_Screen_resolution_settings.render(
+                str(round(settings_menu.game_sound_Default * 100)) + " %", 1, display.BLACK, display.PINCK)
+
+            # Отрисовка прибавления и убавления звука
+            display.screen.blit(settings_menu.text_for_setting_menu_set_volume, (
+            main_menu.coordinates_of_text_for_main_menu_selection_volume[0],
+            main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] + 100))
+            display.screen.blit(settings_menu.text_for_setting_menu_turn_down_the_sound, (
+            main_menu.coordinates_of_text_for_main_menu_selection_volume[0] + 100,
+            main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] + 95))
+            display.screen.blit(main_menu.text_for_setting_menu_sound_percentage, (
+            main_menu.coordinates_of_text_for_main_menu_selection_volume[0] + 125,
+            main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] + 102))
+            display.screen.blit(settings_menu.text_for_setting_menu_turn_up_the_sound, (
+            main_menu.coordinates_of_text_for_main_menu_selection_volume[0] + 185,
+            main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] + 95))
+
 
 
 """"Раздел, хранящий переменные настройки дисплея (разрешение, цвет, форма шрифта и т.д.)"""
@@ -229,75 +302,6 @@ class Main_menu(object):
 
                 if self.check:
                     pygame.quit()
-
-    # Отрисовка текста в главном меню
-    def building_text(self):
-        global in_settings
-        global in_menu
-        global screen_resolution_Default
-
-        if in_menu:
-            # отрисовка кнопок старт, настроки и выход
-            display.screen.blit(self.text_for_main_menu_1,
-                                (self.draw_button_play[0] + (self.size_button[0] - 53) / 2, self.draw_button_play[1]))
-            display.screen.blit(self.text_for_main_menu_2, (
-            self.draw_button_settings[0] + (self.size_button[0] - 99) / 2, self.draw_button_settings[1]))
-            display.screen.blit(self.text_for_main_menu,
-                                (self.draw_button[0] + (self.size_button[0] - 50) / 2, self.draw_button[1]))
-
-        if in_settings:
-            # Oтрисовка кнопки Back
-            display.screen.blit(settings_menu.text_for_main_menu_3, self.draw_button_back)
-            # Отрисовка стрелочек выбора разрешения и текста между ними
-            display.screen.blit(settings_menu.text_for_main_menu_screen_resolution,
-                                self.coordinates_of_text_for_main_menu_screen_resolution)
-            display.screen.blit(settings_menu.text_for_setting_menu_Left_Vibirator_permission, (
-            self.coordinates_of_text_for_main_menu_screen_resolution[0] + 200,
-            self.coordinates_of_text_for_main_menu_screen_resolution[1] - 3))
-            display.screen.blit(settings_menu.text_for_main_menu_screen_resolution_size, (
-            self.coordinates_of_text_for_main_menu_screen_resolution[0] + 220,
-            self.coordinates_of_text_for_main_menu_screen_resolution[1]))
-            # Отрисовка правой стрелочки выбора разрешения
-            if (screen_resolution_Default == 0) or (screen_resolution_Default == 1):
-                display.screen.blit(settings_menu.text_for_setting_menu_Right_Vibirator_permission, (
-                self.coordinates_of_text_for_main_menu_screen_resolution[0] + 315,
-                self.coordinates_of_text_for_main_menu_screen_resolution[1] - 3))
-
-            if (screen_resolution_Default == 2):
-                display.screen.blit(settings_menu.text_for_setting_menu_Right_Vibirator_permission, (
-                self.coordinates_of_text_for_main_menu_screen_resolution[0] + 325,
-                self.coordinates_of_text_for_main_menu_screen_resolution[1] - 3))
-
-            if (screen_resolution_Default == 3) or (screen_resolution_Default == 4):
-                display.screen.blit(settings_menu.text_for_setting_menu_Right_Vibirator_permission, (
-                self.coordinates_of_text_for_main_menu_screen_resolution[0] + 335,
-                self.coordinates_of_text_for_main_menu_screen_resolution[1] - 3))
-
-            # Отрисовка текста на кнопке Apply
-            display.screen.blit(settings_menu.text_for_setting_menu_Apply,
-                                (self.draw_button_back[0] + 150, self.draw_button_back[1]))
-            # Отрисовка текста около выбора экранного режима
-            display.screen.blit(settings_menu.text_for_main_menu_screen_mode, (
-            self.coordinates_of_text_for_main_menu_screen_resolution[0],
-            self.coordinates_of_text_for_main_menu_screen_resolution[1] + 50))
-
-            # отрисовка состояния звука
-            self.text_for_setting_menu_sound_percentage = main_menu.font_for_Screen_resolution_settings.render(
-                str(round(settings_menu.game_sound_Default * 100)) + " %", 1, display.BLACK, display.PINCK)
-
-            # Отрисовка прибавления и убавления звука
-            display.screen.blit(settings_menu.text_for_setting_menu_set_volume, (
-            self.coordinates_of_text_for_main_menu_selection_volume[0],
-            self.coordinates_of_text_for_main_menu_screen_resolution[1] + 100))
-            display.screen.blit(settings_menu.text_for_setting_menu_turn_down_the_sound, (
-            self.coordinates_of_text_for_main_menu_selection_volume[0] + 100,
-            self.coordinates_of_text_for_main_menu_screen_resolution[1] + 95))
-            display.screen.blit(self.text_for_setting_menu_sound_percentage, (
-            self.coordinates_of_text_for_main_menu_selection_volume[0] + 125,
-            self.coordinates_of_text_for_main_menu_screen_resolution[1] + 102))
-            display.screen.blit(settings_menu.text_for_setting_menu_turn_up_the_sound, (
-            self.coordinates_of_text_for_main_menu_selection_volume[0] + 185,
-            self.coordinates_of_text_for_main_menu_screen_resolution[1] + 95))
 
 
 
@@ -878,5 +882,5 @@ while True:
 
 
     # Вызов функции отрисовки текста на кнопках в главном меню
-    main_menu.building_text()
+    building_text()
     pygame.display.update()
