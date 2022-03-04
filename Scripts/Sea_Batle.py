@@ -1,3 +1,4 @@
+from inspect import _void
 import pygame
 import pygame as pg
 import sys
@@ -685,6 +686,20 @@ class Playing_field(object):
         #Цвет голограммы кораблика (Зелёный/Красный)
         self.hologram_color = display.DARK_GREEN
 
+        #Название файла сохранения расстановки корабликов
+        self.preset_name = 'save_1'
+
+        #Путь + название + разширение файла расстановки корабликов
+        self.preset_way = 'ships_preset\{0}.txt'.format(self.preset_name)
+
+        #Список с данные о координатах и виде кораблика для сохранения
+        self.save_ships_log = []
+
+        self.i = 0
+
+        #Инициализация и открытие файла сохранения
+        self.ships_preset = open(self.preset_way,'w')
+        
     def one_deck_ship (self):
         pygame.draw.rect(display.screen, display.DARK_GREEN, [self.block_place, self.block_size])  
 
@@ -741,6 +756,8 @@ class Playing_field(object):
         if y <= 6:
             pygame.draw.rect(display.screen, self.hologram_color, [[self.block_place[0] + self.indent*3 + self.block_side_size*3, self.block_place[1]], self.block_size])
 
+
+
     def inv_four_deck_ship (self, x):
         if x > 6:
             self.accessible_area = False
@@ -761,6 +778,7 @@ class Playing_field(object):
         for x in range(10):
             for y in range(10):
                 pygame.draw.rect(display.screen, display.LIGHT_GRAY, [self.block_place, self.block_size])
+                        
 
                 self.block_place[0] += self.block_side_size
                 self.block_place[0] += self.indent
@@ -777,26 +795,69 @@ class Playing_field(object):
                 if self.block_place[0] <= mouse_pose[0] <= self.block_place[0] + self.block_size[0] and self.block_place[1] <= mouse_pose[1] <= self.block_place[1] + self.block_size[1]:
                     if selected_ships == 1:
                         self.one_deck_ship()
+                        if ev.type == pygame.MOUSEBUTTONDOWN and self.accessible_area == True:
+                            self.i += 1
+                            if self.i  == 1: self.save_ships_log.append("{0}{1}{2}".format(x,y,1))
+                            #print(self.save_ships_log)
+                        if ev.type == pygame.MOUSEBUTTONUP:
+                            self.i = 0
 
                     elif selected_ships == 2:
                         if inv_ships == False:
                             self.two_deck_ship(y)
+                            if ev.type == pygame.MOUSEBUTTONDOWN and self.accessible_area == True:
+                                self.i += 1
+                                if self.i  == 1: self.save_ships_log.append("{0}{1}{2}".format(x,y,2))
+                                #print(self.save_ships_log)
+                            if ev.type == pygame.MOUSEBUTTONUP:
+                                self.i = 0
                         else:
                             self.inv_two_deck_ship(x)
+                            if ev.type == pygame.MOUSEBUTTONDOWN and self.accessible_area == True:
+                                self.i += 1
+                                if self.i  == 1: self.save_ships_log.append("{0}{1}{2}".format(x,y,3))
+                                #print(self.save_ships_log)
+                            if ev.type == pygame.MOUSEBUTTONUP:
+                                self.i = 0
 
                     elif selected_ships == 3:
                         if inv_ships == False:
                             self.three_deck_ship(y)
+                            if ev.type == pygame.MOUSEBUTTONDOWN and self.accessible_area == True:
+                                self.i += 1
+                                if self.i  == 1: self.save_ships_log.append("{0}{1}{2}".format(x,y,4))
+                                #print(self.save_ships_log)
+                            if ev.type == pygame.MOUSEBUTTONUP:
+                                self.i = 0
                         else:
                             self.inv_three_deck_ship(x)
+                            if ev.type == pygame.MOUSEBUTTONDOWN and self.accessible_area == True:
+                                self.i += 1
+                                if self.i  == 1: self.save_ships_log.append("{0}{1}{2}".format(x,y,5))
+                                #print(self.save_ships_log)
+                            if ev.type == pygame.MOUSEBUTTONUP:
+                                self.i = 0
 
                     elif selected_ships == 4:
                         if inv_ships == False:
                             self.four_deck_ship(y)
+                            if ev.type == pygame.MOUSEBUTTONDOWN and self.accessible_area == True:
+                                self.i += 1
+                                if self.i  == 1: self.save_ships_log.append("{0}{1}{2}".format(x,y,6))
+                                #print(self.save_ships_log)
+                            if ev.type == pygame.MOUSEBUTTONUP:
+                                self.i = 0
+                                    
                         else:
                             self.inv_four_deck_ship(x)
+                            if ev.type == pygame.MOUSEBUTTONDOWN and self.accessible_area == True:
+                                self.i += 1
+                                if self.i  == 1: self.save_ships_log.append("{0}{1}{2}".format(x,y,7))
+                                #print(self.save_ships_log)
+                            if ev.type == pygame.MOUSEBUTTONUP:
+                                self.i = 0
                     
-                    print("x: " + str(x) + " y: " + str(y))
+                    #print("x: " + str(x) + " y: " + str(y))
                     if self.accessible_area == False:
                         self.hologram_color = display.DARK_RED
                     else:
@@ -809,6 +870,50 @@ class Playing_field(object):
             self.block_place[1] += self.block_side_size
             self.block_place[1] += self.indent
         self.block_place[1] = self.BLOCK_PLACE[1]
+
+        #Отрисовываю поставленные кораблики
+        for n in range(len(self.save_ships_log)):
+            for x in range(10):
+                for y in range(10):
+                    #print("{0} = {1} + {2} + {3}".format(self.save_ships_log[n], self.save_ships_log[n][0], self.save_ships_log[n][1] ,self.save_ships_log[n][2]))
+                    if x == int(self.save_ships_log[n][0]) and y == int(self.save_ships_log[n][1]):
+                        #print("log_x: {0} x: {1} log_y: {2} y: {3}".format(self.save_ships_log[n][0], x, self.save_ships_log[n][1], y))
+                        if int(self.save_ships_log[n][2]) == 1:
+                            pygame.draw.rect(display.screen, display.TEAL, [self.block_place, self.block_size])
+                        if int(self.save_ships_log[n][2]) == 2:
+                            pygame.draw.rect(display.screen, display.TEAL, [self.block_place, self.block_size])
+                            pygame.draw.rect(display.screen, display.TEAL, [[self.block_place[0] + self.indent + self.block_side_size, self.block_place[1]], self.block_size])
+                        if int(self.save_ships_log[n][2]) == 3:
+                            pygame.draw.rect(display.screen, display.TEAL, [self.block_place, self.block_size])
+                            pygame.draw.rect(display.screen, display.TEAL, [[self.block_place[0], self.block_place[1] + self.indent + self.block_side_size], self.block_size])
+                        if int(self.save_ships_log[n][2]) == 4:
+                            pygame.draw.rect(display.screen, display.TEAL, [self.block_place, self.block_size])
+                            for c in range(2):
+                                pygame.draw.rect(display.screen, display.TEAL, [[self.block_place[0] + self.indent * (c+1) + self.block_side_size * (c+1), self.block_place[1]], self.block_size])
+                        if int(self.save_ships_log[n][2]) == 5:
+                            pygame.draw.rect(display.screen, display.TEAL, [self.block_place, self.block_size])
+                            for c in range(2):
+                                pygame.draw.rect(display.screen, display.TEAL, [[self.block_place[0], self.block_place[1] + self.indent * (c+1) + self.block_side_size * (c+1)], self.block_size])
+                        if int(self.save_ships_log[n][2]) == 6:
+                            pygame.draw.rect(display.screen, display.TEAL, [self.block_place, self.block_size])
+                            for c in range(3):
+                                pygame.draw.rect(display.screen, display.TEAL, [[self.block_place[0] + self.indent * (c+1) + self.block_side_size * (c+1), self.block_place[1]], self.block_size])
+                        if int(self.save_ships_log[n][2]) == 7:
+                            pygame.draw.rect(display.screen, display.TEAL, [self.block_place, self.block_size])
+                            for c in range(3):
+                                pygame.draw.rect(display.screen, display.TEAL, [[self.block_place[0], self.block_place[1] + self.indent * (c+1) + self.block_side_size * (c+1)], self.block_size])
+    
+                    self.block_place[0] += self.block_side_size
+                    self.block_place[0] += self.indent
+                #обнуляю координаты икса, чтобы начать отрисовывать следующую строчку
+                self.block_place[0] = self.BLOCK_PLACE[0]
+                self.block_place[1] += self.block_side_size
+                self.block_place[1] += self.indent
+
+            self.block_place[1] = self.BLOCK_PLACE[1]
+            
+        
+
 
 
 
