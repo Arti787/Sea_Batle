@@ -2,6 +2,8 @@ import pygame
 import pygame as pg
 import sys
 
+from tkinter import *
+from tkinter import messagebox as mb
 from pygame import display
 
 pygame.init()
@@ -28,7 +30,7 @@ screen_resolution_Default = 1
 # Приминить значение?
 apply = False
 
-""""Раздел вызова всех Функций инициализаторов"""
+""""---------------------------------------------Раздел специальных функций---------------------------------------------"""
 
 
 def Update_Fuking_function():
@@ -38,6 +40,16 @@ def Update_Fuking_function():
 
 def Update_Fuking_volume():
     pg.mixer.music.set_volume(settings_menu.game_sound_Default)
+
+
+
+# вызов менью: Уже уходите? -да -нет
+def checkung_change_of_user(title,message):
+
+    answer = mb.askyesno(
+        title=title,
+        message=message)
+    return answer
 
 
 """"Раздел, хранящий переменные настройки дисплея (разрешение, цвет, форма шрифта и т.д.)"""
@@ -105,10 +117,8 @@ class Main_menu(object):
     def __init__(self):
         # Цвет фона главного меню
         display.screen.fill(display.WHITE)
-
         # Размеры Кнопки
         self.size_button = (140, 40)
-
         # Координаты отрисовки предметов
         self.draw_button_play = ((display.screen_width / 2) - self.size_button[0] / 2,
                                  (display.screen_height / 2) - self.size_button[1] / 2 - 60)
@@ -117,21 +127,20 @@ class Main_menu(object):
         self.draw_button = ((display.screen_width / 2) - self.size_button[0] / 2,
                             (display.screen_height / 2) - self.size_button[1] / 2 + 60)
         self.draw_button_back = (48, 10)
-
         # Координаты отрисовки предметов (та штука, что идёт следом очень важна для отрисовки почти всего меню настроек на основе её координат были спроектированы другие элементы раздела настроек)
         self.coordinates_of_text_for_main_menu_screen_resolution = (25, 70)
         self.coordinates_of_text_for_main_menu_selection_volume = (
         self.coordinates_of_text_for_main_menu_screen_resolution[0],
         self.coordinates_of_text_for_main_menu_screen_resolution[1] + 80)
-
         # Шрифтовые переменные и их свойства
         self.font_for_main_menu = pygame.font.SysFont('arial', 33)
         self.font_for_Screen_resolution_settings = pygame.font.SysFont('arial', 25)
-
         # Текст, приминяемый в функции
         self.Main_menu_Button_play = "Play"
         self.Main_menu_Button_settings = "Settings"
         self.Main_menu_Button_Quit = "Quit"
+
+        self.check = False
 
     # Кнопка Play
     def Start_button_hovered(self):
@@ -212,7 +221,11 @@ class Main_menu(object):
         if ev.type == pygame.MOUSEBUTTONDOWN:
             if self.draw_button[0] <= mouse_pose[0] <= self.draw_button[0] + self.size_button[0] and self.draw_button[
                 1] <= mouse_pose[1] <= self.draw_button[1] + self.size_button[1]:
-                pygame.quit()
+
+                self.check = checkung_change_of_user("Выход из игры", "Уже уходите?")
+
+                if self.check:
+                    pygame.quit()
 
     # Отрисовка текста в главном меню
     def building_text(self):
@@ -284,6 +297,10 @@ class Main_menu(object):
             self.coordinates_of_text_for_main_menu_screen_resolution[1] + 95))
 
 
+
+
+
+
 """"---------------------------------------------Раздел проектировки меню настроек---------------------------------------------"""
 
 
@@ -294,6 +311,9 @@ class Settings_menu(object):
 
     def __init__(self):
         global screen_resolution_Default
+
+
+
         # Координаты отрисовки предметов
         self.draw_button_back_out_of_settings = (10, 10)
         self.draw_button_sweech__screen_mode = (main_menu.coordinates_of_text_for_main_menu_screen_resolution[0] + 170,
@@ -315,6 +335,9 @@ class Settings_menu(object):
         self.Main_menu_Button_set_volume = "Sound: "
         self.Main_menu_Button_turn_down_the_sound = "-"
         self.Main_menu_Button_turn_up_the_sound = "+"
+
+        self.Text_for_messagebox_title = "Изменение настроек игры"
+        self.Text_for_messagebox_message = "Приминить Изменения?"
 
         # Дефолтные настройки
         screen_resolution_Default = 1
@@ -375,21 +398,51 @@ class Settings_menu(object):
             if self.draw_button_back_out_of_settings[0] <= mouse_pose[0] <= self.draw_button_back_out_of_settings[0] + \
                     self.size_button[0] and self.draw_button_back_out_of_settings[1] <= mouse_pose[1] <= \
                     self.draw_button_back_out_of_settings[1] + self.size_button[1]:
-                in_menu = True
-                # Делаю невидимым меню настроек
-                in_settings = False
-                in_playing = False
-                pygame.draw.rect(display.screen, display.WHITE,
-                                 [self.draw_button_back_out_of_settings, self.size_button])
-                self.text_for_main_menu_3 = main_menu.font_for_main_menu.render(
-                    self.Main_menu_Button_back_out_of_settings, 1, display.WHITE, display.WHITE)
 
-                display.screen.fill(display.WHITE)
+                slave = checkung_change_of_user( self.Text_for_messagebox_title,  self.Text_for_messagebox_message )
 
-                if apply == False:
-                    self.game_sound_Default = main_menu.temporary_storage_of_sound_level
-                    Update_Fuking_volume()
-                apply = False
+
+                if slave:
+
+                    #приминяю текущие настройки
+                    self.temporary_storage_of_sound_level = settings_menu.game_sound_Default
+                    Update_Fuking_function()
+                    apply = True
+
+
+                    display.res = (display.Standard_Screen_Size[screen_resolution_Default])
+                    if apply == False:
+                        self.game_sound_Default = main_menu.temporary_storage_of_sound_level
+                        Update_Fuking_volume()
+                    apply = False
+
+                    in_menu = True
+                    # Делаю невидимым меню настроек
+                    in_settings = False
+                    in_playing = False
+                    pygame.draw.rect(display.screen, display.WHITE,[self.draw_button_back_out_of_settings, self.size_button])
+                    self.text_for_main_menu_3 = main_menu.font_for_main_menu.render(self.Main_menu_Button_back_out_of_settings, 1, display.WHITE, display.WHITE)
+
+                    display.screen.fill(display.WHITE)
+
+                else:
+
+                    display.res = (display.Standard_Screen_Size[screen_resolution_Default])
+                    if apply == False:
+                        self.game_sound_Default = main_menu.temporary_storage_of_sound_level
+                        Update_Fuking_volume()
+                    apply = False
+
+
+                    in_menu = True
+                    # Делаю невидимым меню настроек
+                    in_settings = False
+                    in_playing = False
+                    pygame.draw.rect(display.screen, display.WHITE,[self.draw_button_back_out_of_settings, self.size_button])
+                    self.text_for_main_menu_3 = main_menu.font_for_main_menu.render(self.Main_menu_Button_back_out_of_settings, 1, display.WHITE, display.WHITE)
+
+                    display.screen.fill(display.WHITE)
+
 
     # "Ползунки" смены разрешения
     def Left_setting_change_button_pressed(self):
@@ -404,6 +457,10 @@ class Settings_menu(object):
                     main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3 <= mouse_pose[1] <= \
                     main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3 + \
                     self.size_button_resolution_selection[1]:
+
+
+
+
                 if screen_resolution_Default != 0:
                     screen_resolution_Default = screen_resolution_Default - 1
 
@@ -453,6 +510,9 @@ class Settings_menu(object):
                     main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3 + \
                     self.size_button_resolution_selection[1]:
 
+
+
+
                 if screen_resolution_Default != 4:
                     screen_resolution_Default = screen_resolution_Default + 1
 
@@ -465,6 +525,9 @@ class Settings_menu(object):
                     main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3 <= mouse_pose[1] <= \
                     main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3 + \
                     self.size_button_resolution_selection[1]:
+
+
+
 
                 if screen_resolution_Default != 4:
                     screen_resolution_Default = screen_resolution_Default + 1
@@ -479,6 +542,8 @@ class Settings_menu(object):
                     main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3 <= mouse_pose[1] <= \
                     main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] - 3 + \
                     self.size_button_resolution_selection[1]:
+
+
 
                 if screen_resolution_Default != 4:
                     screen_resolution_Default = screen_resolution_Default + 1
@@ -524,11 +589,15 @@ class Settings_menu(object):
                         self.size_button_swich_screen_mode[0] and self.draw_button_sweech__screen_mode[1] <= mouse_pose[
                     1] <= self.draw_button_sweech__screen_mode[1] + self.size_button_swich_screen_mode[1]:
                     Full_screen_mode = False
+
+
             else:
                 if self.draw_button_sweech__screen_mode[0] <= mouse_pose[0] <= self.draw_button_sweech__screen_mode[0] + \
                         self.size_button_swich_screen_mode[0] and self.draw_button_sweech__screen_mode[1] <= mouse_pose[
                     1] <= self.draw_button_sweech__screen_mode[1] + self.size_button_swich_screen_mode[1]:
                     Full_screen_mode = True
+
+
 
     # Кнопка "применить"
     def Apply_button_hovered(self):
@@ -555,26 +624,29 @@ class Settings_menu(object):
             if main_menu.draw_button_back[0] + 150 <= mouse_pose[0] <= main_menu.draw_button_back[0] + 150 + \
                     self.size_button[0] and main_menu.draw_button_back[1] <= mouse_pose[1] <= \
                     main_menu.draw_button_back[1] + self.size_button[1]:
-                display.res = (display.Standard_Screen_Size[screen_resolution_Default])
-                Update_Fuking_function()
+
 
                 self.temporary_storage_of_sound_level = settings_menu.game_sound_Default
+                Update_Fuking_function()
                 apply = True
+
 
     # "Ползунки" смены уровня звука
     def Button_turn_down_the_sound(self):
+
         global mouse_pose
         global screen_resolution_Default
         if ev.type == pygame.MOUSEBUTTONDOWN:
             if main_menu.coordinates_of_text_for_main_menu_selection_volume[0] + 100 <= mouse_pose[0] <= \
                     main_menu.coordinates_of_text_for_main_menu_selection_volume[0] + 100 + \
                     self.size_button_sound_selection[0] and \
-                    main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] <= mouse_pose[1] <= \
-                    main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] + 100 + \
-                    self.size_button_sound_selection[1]:
+                    main_menu.coordinates_of_text_for_main_menu_selection_volume[1] + 30 <= mouse_pose[1] <= \
+                    main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] + 100 + self.size_button_sound_selection[1]:
+
                 if self.game_sound_Default > 0:
                     self.game_sound_Default -= 0.01
                     Update_Fuking_volume()
+
 
     def Button_turn_up_the_sound(self):
         global mouse_pose
@@ -583,12 +655,14 @@ class Settings_menu(object):
             if main_menu.coordinates_of_text_for_main_menu_selection_volume[0] + 185 <= mouse_pose[0] <= \
                     main_menu.coordinates_of_text_for_main_menu_selection_volume[0] + 185 + \
                     self.size_button_sound_selection[0] and \
-                    main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] <= mouse_pose[1] <= \
+                    main_menu.coordinates_of_text_for_main_menu_selection_volume[1] + 30 <= mouse_pose[1] <= \
                     main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] + 100 + \
                     self.size_button_sound_selection[1]:
+
                 if self.game_sound_Default < 1:
                     self.game_sound_Default += 0.01
                     Update_Fuking_volume()
+
 
 
 """"---------------------------------------------Раздел проектировки игргового поля---------------------------------------------"""
