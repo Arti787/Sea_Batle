@@ -9,7 +9,8 @@ from pygame import display
 pygame.init()
 pygame.display.set_caption("Sea Battle by Sergaris and GriGA")
 
-pg.mixer.music.load('Sounds/piraty-karibskogo-morja-saundtrek-hes-a-pirate-glavnaja-tema(mp3gid.me).mp3')
+#pg.mixer.music.load('Sounds/piraty-karibskogo-morja-saundtrek-hes-a-pirate-glavnaja-tema(mp3gid.me).mp3')
+pg.mixer.music.load('Sounds/No.mp3')
 pg.mixer.music.play(-1)
 pg.mixer.music.set_volume(0.05)
 
@@ -42,9 +43,8 @@ def Update_Fuking_volume():
     pg.mixer.music.set_volume(settings_menu.game_sound_Default)
 
 
-
 # вызов менью: Уже уходите? -да -нет
-def checkung_change_of_user(title,message):
+def checkung_change_of_user(title, message):
 
     answer = mb.askyesno(
         title=title,
@@ -140,6 +140,9 @@ class Main_menu(object):
         self.Main_menu_Button_settings = "Settings"
         self.Main_menu_Button_Quit = "Quit"
 
+        self.Text_for_quit_the_game_title ="Exit the game"
+        self.Text_for_quit_the_game_message ="Already leaving?"
+
         self.check = False
 
     # Кнопка Play
@@ -222,7 +225,7 @@ class Main_menu(object):
             if self.draw_button[0] <= mouse_pose[0] <= self.draw_button[0] + self.size_button[0] and self.draw_button[
                 1] <= mouse_pose[1] <= self.draw_button[1] + self.size_button[1]:
 
-                self.check = checkung_change_of_user("Выход из игры", "Уже уходите?")
+                self.check = checkung_change_of_user( self.Text_for_quit_the_game_title, self.Text_for_quit_the_game_message )
 
                 if self.check:
                     pygame.quit()
@@ -298,9 +301,6 @@ class Main_menu(object):
 
 
 
-
-
-
 """"---------------------------------------------Раздел проектировки меню настроек---------------------------------------------"""
 
 
@@ -336,8 +336,8 @@ class Settings_menu(object):
         self.Main_menu_Button_turn_down_the_sound = "-"
         self.Main_menu_Button_turn_up_the_sound = "+"
 
-        self.Text_for_messagebox_title = "Изменение настроек игры"
-        self.Text_for_messagebox_message = "Приминить Изменения?"
+        self.Text_for_messagebox_title = "Changing game settings"
+        self.Text_for_messagebox_message = "Apply Changes?"
 
         # Дефолтные настройки
         screen_resolution_Default = 1
