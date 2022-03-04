@@ -9,8 +9,8 @@ from pygame import display
 pygame.init()
 pygame.display.set_caption("Sea Battle by Sergaris and GriGA")
 
-#pg.mixer.music.load('Sounds/piraty-karibskogo-morja-saundtrek-hes-a-pirate-glavnaja-tema(mp3gid.me).mp3')
-pg.mixer.music.load('Sounds/No.mp3')
+pg.mixer.music.load('Sounds/piraty-karibskogo-morja-saundtrek-hes-a-pirate-glavnaja-tema(mp3gid.me).mp3')
+
 pg.mixer.music.play(-1)
 pg.mixer.music.set_volume(0.05)
 
