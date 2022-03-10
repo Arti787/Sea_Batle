@@ -14,6 +14,8 @@ pg.mixer.music.load('Sounds/piraty-karibskogo-morja-saundtrek-hes-a-pirate-glavn
 pg.mixer.music.play(-1)
 pg.mixer.music.set_volume(0.00)
 
+
+
 """"Раздел булевых переменных, отвечающих за отображение различных вещей на дисплее игрока"""
 
 # Переменная, устанавливающая разрешение по умолчанию (если она True то разрешение ставится по умолчанию 720х720)
@@ -32,6 +34,11 @@ screen_resolution_Default = 1
 apply = False
 # Сохранены ли изменения?
 Save_Changes = False
+
+selected_ships = 1
+
+inv_ships = False
+
 
 """"---------------------------------------------Раздел специальных функций---------------------------------------------"""
 
@@ -53,6 +60,13 @@ def checkung_change_of_user(title, message):
         title=title,
         message=message)
     return answer
+
+def sound_play():
+    display.sound_for_change_button.play()
+
+
+
+
 
 
 # Отрисовка текста
@@ -203,6 +217,10 @@ class Display(object):
         # Ожидание в милисекундах
         self.WAITING_ME = 75
 
+        # объявление спец. функции, отвечающей за проигрывание звука при наведении на объекты (+ настройка параметров звука)
+        self.sound_for_change_button = pygame.mixer.Sound('Sounds/for_buttons/3.mp3')
+        self.sound_for_change_button.set_volume(0.03)
+
 
 """"---------------------------------------------Раздел проектировки главного меню---------------------------------------------"""
 
@@ -240,12 +258,26 @@ class Main_menu(object):
 
         self.check = False
 
+        #переменные, отвечеющие за то, чтобы программа проигрывала только один звук нажатия
+        self.is_the_cursor_hovered = True
+        self.is_the_cursor_hovered1 = True
+        self.is_the_cursor_hovered2 = True
+
+
     # Кнопка Play
     def Start_button_hovered(self):
         global mouse_pose
 
         if self.draw_button_play[0] <= mouse_pose[0] <= self.draw_button_play[0] + self.size_button[0] and \
                 self.draw_button_play[1] <= mouse_pose[1] <= self.draw_button_play[1] + self.size_button[1]:
+
+
+            if self.is_the_cursor_hovered:
+                sound_play()
+                self.is_the_cursor_hovered = False
+
+
+
             pygame.draw.rect(display.screen, display.LIGHT_GRAY, [self.draw_button_play, self.size_button])
             self.text_for_main_menu_1 = self.font_for_main_menu.render(self.Main_menu_Button_play, 1, display.WHITE,
                                                                        display.LIGHT_GRAY)
@@ -253,6 +285,7 @@ class Main_menu(object):
             pygame.draw.rect(display.screen, display.GRAY, [self.draw_button_play, self.size_button])
             self.text_for_main_menu_1 = self.font_for_main_menu.render(self.Main_menu_Button_play, 1, display.WHITE,
                                                                        display.GRAY)
+            self.is_the_cursor_hovered = True
 
     def Start_button_pressed(self):
         global mouse_pose
@@ -277,11 +310,19 @@ class Main_menu(object):
 
         if self.draw_button_settings[0] <= mouse_pose[0] <= self.draw_button_settings[0] + self.size_button[0] and \
                 self.draw_button_settings[1] <= mouse_pose[1] <= self.draw_button_settings[1] + self.size_button[1]:
+
+            if self.is_the_cursor_hovered1:
+                sound_play()
+                self.is_the_cursor_hovered1 = False
+
             pygame.draw.rect(display.screen, display.LIGHT_GRAY, [self.draw_button_settings, self.size_button])
             self.text_for_main_menu_2 = self.font_for_main_menu.render(self.Main_menu_Button_settings, 1, display.WHITE,
                                                                        display.LIGHT_GRAY)
 
         else:
+
+            self.is_the_cursor_hovered1 = True
+
             pygame.draw.rect(display.screen, display.GRAY, [self.draw_button_settings, self.size_button])
             self.text_for_main_menu_2 = self.font_for_main_menu.render(self.Main_menu_Button_settings, 1, display.WHITE,
                                                                        display.GRAY)
@@ -306,10 +347,18 @@ class Main_menu(object):
         global mouse_pose
         if self.draw_button[0] <= mouse_pose[0] <= self.draw_button[0] + self.size_button[0] and self.draw_button[1] <= \
                 mouse_pose[1] <= self.draw_button[1] + self.size_button[1]:
+
+            if self.is_the_cursor_hovered2:
+                sound_play()
+                self.is_the_cursor_hovered2 = False
+
             pygame.draw.rect(display.screen, display.LIGHT_GRAY, [self.draw_button, self.size_button])
             self.text_for_main_menu = self.font_for_main_menu.render(self.Main_menu_Button_Quit, 1, display.WHITE,
                                                                      display.LIGHT_GRAY)
         else:
+
+            self.is_the_cursor_hovered2 = True
+
             pygame.draw.rect(display.screen, display.GRAY, [self.draw_button, self.size_button])
             self.text_for_main_menu = self.font_for_main_menu.render(self.Main_menu_Button_Quit, 1, display.WHITE,
                                                                      display.GRAY)
@@ -337,6 +386,8 @@ class Settings_menu(object):
 
     def __init__(self):
         global screen_resolution_Default
+
+
 
         # Координаты отрисовки предметов
         self.draw_button_back_out_of_settings = (10, 10)
@@ -396,6 +447,11 @@ class Settings_menu(object):
         self.text_for_setting_menu_turn_up_the_sound = main_menu.font_for_main_menu.render(
             self.Main_menu_Button_turn_up_the_sound, 1, display.BLACK, display.PINCK)
 
+        #переменные, отвечеющие за то, чтобы программа проигрывала только один звук нажатия
+        self.is_the_cursor_hovered = True
+        self.is_the_cursor_hovered1 = True
+        self.is_the_cursor_hovered2 = True
+
     # Кнопка Back
     def Back_button_hovered(self):
         global mouse_pose
@@ -403,11 +459,19 @@ class Settings_menu(object):
         if self.draw_button_back_out_of_settings[0] <= mouse_pose[0] <= self.draw_button_back_out_of_settings[0] + \
                 self.size_button[0] and self.draw_button_back_out_of_settings[1] <= mouse_pose[1] <= \
                 self.draw_button_back_out_of_settings[1] + self.size_button[1]:
+
+            if self.is_the_cursor_hovered:
+                sound_play()
+                self.is_the_cursor_hovered = False
+
             pygame.draw.rect(display.screen, display.LIGHT_GRAY,
                              [self.draw_button_back_out_of_settings, self.size_button])
             self.text_for_main_menu_3 = main_menu.font_for_main_menu.render(self.Main_menu_Button_back_out_of_settings,
                                                                             1, display.WHITE, display.LIGHT_GRAY)
         else:
+
+            self.is_the_cursor_hovered = True
+
             pygame.draw.rect(display.screen, display.GRAY, [self.draw_button_back_out_of_settings, self.size_button])
             self.text_for_main_menu_3 = main_menu.font_for_main_menu.render(self.Main_menu_Button_back_out_of_settings,
                                                                             1, display.WHITE, display.GRAY)
@@ -588,18 +652,34 @@ class Settings_menu(object):
             if self.draw_button_sweech__screen_mode[0] <= mouse_pose[0] <= self.draw_button_sweech__screen_mode[0] + \
                     self.size_button_swich_screen_mode[0] and self.draw_button_sweech__screen_mode[1] <= mouse_pose[
                 1] <= self.draw_button_sweech__screen_mode[1] + self.size_button_swich_screen_mode[1]:
+
+                if self.is_the_cursor_hovered1:
+                    sound_play()
+                    self.is_the_cursor_hovered1 = False
+
                 pygame.draw.rect(display.screen, display.LIGHT_GREEN,
                                  [self.draw_button_sweech__screen_mode, self.size_button_swich_screen_mode])
             else:
+
+                self.is_the_cursor_hovered1 = True
+
                 pygame.draw.rect(display.screen, display.GREEN,
                                  [self.draw_button_sweech__screen_mode, self.size_button_swich_screen_mode])
         else:
             if self.draw_button_sweech__screen_mode[0] <= mouse_pose[0] <= self.draw_button_sweech__screen_mode[0] + \
                     self.size_button_swich_screen_mode[0] and self.draw_button_sweech__screen_mode[1] <= mouse_pose[
                 1] <= self.draw_button_sweech__screen_mode[1] + self.size_button_swich_screen_mode[1]:
+
+                if self.is_the_cursor_hovered1:
+                    sound_play()
+                    self.is_the_cursor_hovered1 = False
+
                 pygame.draw.rect(display.screen, display.LIGHT_RED,
                                  [self.draw_button_sweech__screen_mode, self.size_button_swich_screen_mode])
             else:
+
+                self.is_the_cursor_hovered1 = True
+
                 pygame.draw.rect(display.screen, display.RED,
                                  [self.draw_button_sweech__screen_mode, self.size_button_swich_screen_mode])
 
@@ -630,11 +710,19 @@ class Settings_menu(object):
         if main_menu.draw_button_back[0] + 115 <= mouse_pose[0] <= main_menu.draw_button_back[0] + 115 + \
                 self.size_button[0] and main_menu.draw_button_back[1] <= mouse_pose[1] <= main_menu.draw_button_back[
             1] + self.size_button[1]:
+
+            if self.is_the_cursor_hovered2:
+                sound_play()
+                self.is_the_cursor_hovered2 = False
+
             pygame.draw.rect(display.screen, display.LIGHT_GRAY,
                              [(main_menu.draw_button_back[0] + 115, main_menu.draw_button_back[1]), self.size_button])
             self.text_for_setting_menu_Apply = main_menu.font_for_main_menu.render(self.Main_menu_Button_Apply, 1,
                                                                                    display.WHITE, display.LIGHT_GRAY)
         else:
+
+            self.is_the_cursor_hovered2 = True
+
             pygame.draw.rect(display.screen, display.GRAY,
                              [(main_menu.draw_button_back[0] + 115, main_menu.draw_button_back[1]), self.size_button])
             self.text_for_setting_menu_Apply = main_menu.font_for_main_menu.render(self.Main_menu_Button_Apply, 1,
@@ -741,6 +829,13 @@ class Playing_field(object):
         self.draw_save_button = (self.draw_load_button[0] + 50 - 25 + self.block_side_size, self.draw_load_button[1])
         self.draw_play_button = (self.draw_load_button[0] + 100 - 25 + self.block_side_size + (
                     25 - (25 * self.now_Screen_Size[1] / self.now_Screen_Size[0])), self.draw_load_button[1])
+
+        #переменные, отвечеющие за то, чтобы программа проигрывала только один звук нажатия
+        self.is_the_cursor_hovered = True
+        self.is_the_cursor_hovered1 = True
+        self.is_the_cursor_hovered2 = True
+        self.is_the_cursor_hovered3 = True
+
 
     def one_deck_ship (self):
         pygame.draw.rect(display.screen, display.DARK_GREEN, [self.block_place, self.block_size])  
@@ -985,12 +1080,20 @@ class Playing_field(object):
                 self.size_button_from_settings_menu[0] and settings_menu.draw_button_back_out_of_settings[1] <= \
                 mouse_pose[1] <= \
                 settings_menu.draw_button_back_out_of_settings[1] + self.size_button_from_settings_menu[1]:
+
+            if self.is_the_cursor_hovered:
+                sound_play()
+                self.is_the_cursor_hovered = False
+
             pygame.draw.rect(display.screen, display.LIGHT_GRAY,
                              [settings_menu.draw_button_back_out_of_settings, self.size_button_from_settings_menu])
             settings_menu.text_for_main_menu_3 = main_menu.font_for_main_menu.render(
                 settings_menu.Main_menu_Button_back_out_of_settings,
                 1, display.WHITE, display.LIGHT_GRAY)
         else:
+
+            self.is_the_cursor_hovered = True
+
             pygame.draw.rect(display.screen, display.GRAY,
                              [settings_menu.draw_button_back_out_of_settings, self.size_button_from_settings_menu])
             settings_menu.text_for_main_menu_3 = main_menu.font_for_main_menu.render(
@@ -1007,9 +1110,17 @@ class Playing_field(object):
 
         if self.draw_load_button[0] <= mouse_pose[0] <= self.draw_load_button[0] + self.size_button[0] and \
                 self.draw_load_button[1] <= mouse_pose[1] <= self.draw_load_button[1] + self.size_button[1]:
+
+            if self.is_the_cursor_hovered1:
+                sound_play()
+                self.is_the_cursor_hovered1 = False
+
             pygame.draw.rect(display.screen, display.LIGHT_GRAY, [self.draw_load_button, self.size_button])
 
         else:
+
+            self.is_the_cursor_hovered1 = True
+
             pygame.draw.rect(display.screen, display.GRAY, [self.draw_load_button, self.size_button])
 
     # Кнопка Сохрания планеровки в файловую систему
@@ -1022,9 +1133,17 @@ class Playing_field(object):
 
         if self.draw_save_button[0] <= mouse_pose[0] <= self.draw_save_button[0] + self.size_button[0] and \
                 self.draw_save_button[1] <= mouse_pose[1] <= self.draw_save_button[1] + self.size_button[1]:
+
+            if self.is_the_cursor_hovered2:
+                sound_play()
+                self.is_the_cursor_hovered2 = False
+
             pygame.draw.rect(display.screen, display.LIGHT_GRAY, [self.draw_save_button, self.size_button])
 
         else:
+
+            self.is_the_cursor_hovered2 = True
+
             pygame.draw.rect(display.screen, display.GRAY, [self.draw_save_button, self.size_button])
 
     # Кнопка play
@@ -1038,12 +1157,20 @@ class Playing_field(object):
         if self.draw_play_button[0] <= mouse_pose[0] <= self.draw_play_button[0] + self.size_button_from_settings_menu[
             0] and self.draw_play_button[1] <= mouse_pose[1] <= self.draw_play_button[1] + \
                 self.size_button_from_settings_menu[1]:
+
+            if self.is_the_cursor_hovered3:
+                sound_play()
+                self.is_the_cursor_hovered3 = False
+
             pygame.draw.rect(display.screen, display.LIGHT_GRAY,
                              [self.draw_play_button, self.size_button_from_settings_menu])
             self.text_for_Playing_field_play = main_menu.font_for_main_menu.render(main_menu.Main_menu_Button_play, 1,
                                                                                    display.WHITE, display.LIGHT_GRAY)
 
         else:
+
+            self.is_the_cursor_hovered3 = True
+
             pygame.draw.rect(display.screen, display.GRAY, [self.draw_play_button, self.size_button_from_settings_menu])
             self.text_for_Playing_field_play = main_menu.font_for_main_menu.render(main_menu.Main_menu_Button_play, 1,
                                                                                    display.WHITE, display.GRAY)
@@ -1054,9 +1181,6 @@ display = Display()
 main_menu = Main_menu()
 playing_field = Playing_field()
 settings_menu = Settings_menu()
-
-selected_ships = 1
-inv_ships = False
 
 """"---------------------------------------------Раздел системных вызовов---------------------------------------------"""
 while True:
