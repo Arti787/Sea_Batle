@@ -1,71 +1,46 @@
 import pygame
-import pygame as pg
 import sys
 
-from tkinter import *
-from tkinter import messagebox as mb
-from pygame import display
+sc = pygame.display.set_mode((400, 300))
+sc.fill((100, 150, 200))
 
-WIDTH = 360
-HEIGHT = 480
-FPS = 30
+dog_surf = pygame.image.load(
+    'images/Save.png').convert()
+dog_surf.set_colorkey(
+    (255, 255, 255))
+dog_rect = dog_surf.get_rect(
+    center=(200, 150))
+sc.blit(dog_surf, dog_rect)
+pygame.display.update()
 
-# Задаем цвета
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
+# ждем 1 секунду перед изменением
+pygame.time.wait(1000)
 
-# Создаем игру и окно
-pygame.init()
-pygame.mixer.init()
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("My Game")
-clock = pygame.time.Clock()
+sc.fill((100, 150, 200))
+# уменьшаем в два раза
+scale = pygame.transform.scale(
+    dog_surf, (dog_surf.get_width() // 2,
+               dog_surf.get_height() // 2))
 
+scale_rect = scale.get_rect(
+    center=(200, 150))
 
-#pg.mixer.music.load('Sounds/piraty-karibskogo-morja-saundtrek-hes-a-pirate-glavnaja-tema(mp3gid.me).mp3')
-#pg.mixer.music.play(-1)
-pg.mixer.music.set_volume(0.5)
+sc.blit(scale, scale_rect)
 
-pg.mixer.music.load('Sounds/piraty-karibskogo-morja-saundtrek-hes-a-pirate-glavnaja-tema(mp3gid.me).mp3')
-pg.mixer.music.play()
+pygame.display.update(dog_rect)
+pygame.time.wait(1000)
 
-s = pygame.mixer.Sound('Sounds/for_buttons/3.mp3')
-s.set_volume(0.3)
+sc.fill((100, 150, 200))
+# поворачиваем на 45 градусов
+rot = pygame.transform.rotate(
+    dog_surf, 45)
+rot_rect = rot.get_rect(
+    center=(200, 150))
+sc.blit(rot, rot_rect)
+pygame.display.update()
 
-# Цикл игры
-running = True
-while running:
-    # Держим цикл на правильной скорости
-    clock.tick(FPS)
-    # Ввод процесса (события)
-    for ev in pygame.event.get():
-        # check for closing window
-        if ev.type == pygame.QUIT:
-            running = False
-
-        elif ev.type == pygame.KEYDOWN:
-
-            if ev.key == pygame.K_3:
-                running = False
-
-            if ev.key == pygame.K_1:
-
-                s.play()
-
-
-
-
-
-
-
-    # Обновление
-
-    # Рендеринг
-    screen.fill(BLACK)
-    # После отрисовки всего, переворачиваем экран
-    pygame.display.flip()
-
-pygame.quit()
+while 1:
+    for i in pygame.event.get():
+        if i.type == pygame.QUIT:
+            sys.exit()
+    pygame.time.delay(20)

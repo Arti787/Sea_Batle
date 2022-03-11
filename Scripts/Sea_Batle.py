@@ -12,7 +12,8 @@ pygame.display.set_caption("Sea Battle by Sergaris and GriGA")
 pg.mixer.music.load('Sounds/piraty-karibskogo-morja-saundtrek-hes-a-pirate-glavnaja-tema(mp3gid.me).mp3')
 
 pg.mixer.music.play(-1)
-pg.mixer.music.set_volume(0.00)
+
+
 
 
 
@@ -45,14 +46,19 @@ inv_ships = False
 
 # Перезапуск инициализирующих функций для применения новых настроек
 def Update_Fuking_function():
+    global Save_Changes
+    Save_Changes = False
+
     display.__init__()
     main_menu.__init__()
     playing_field.__init__()
+    Update_Fuking_volume()
 
 
+# установка необходимого уровн звука
 def Update_Fuking_volume():
     pg.mixer.music.set_volume(settings_menu.game_sound_Default)
-
+    display.sound_for_change_button.set_volume(settings_menu.game_sound_effect_Default)
 
 # вызов менью: -да -нет, где title - заголовок, а message - вопрос
 def checkung_change_of_user(title, message):
@@ -63,11 +69,6 @@ def checkung_change_of_user(title, message):
 
 def sound_play():
     display.sound_for_change_button.play()
-
-
-
-
-
 
 # Отрисовка текста
 def building_text():
@@ -130,6 +131,10 @@ def building_text():
         main_menu.text_for_setting_menu_sound_percentage = main_menu.font_for_Screen_resolution_settings.render(
             str(round(settings_menu.game_sound_Default * 100)) + " %", 1, display.BLACK, display.PINCK)
 
+        main_menu.text_for_setting_menu_effect_percentage = main_menu.font_for_Screen_resolution_settings.render(
+            str(round(settings_menu.game_sound_effect_Default * 100)) + " %", 1, display.BLACK, display.PINCK)
+
+
         # Отрисовка прибавления и убавления звука
         display.screen.blit(settings_menu.text_for_setting_menu_set_volume, (
             main_menu.coordinates_of_text_for_main_menu_selection_volume[0],
@@ -143,6 +148,11 @@ def building_text():
         display.screen.blit(settings_menu.text_for_setting_menu_turn_up_the_sound, (
             main_menu.coordinates_of_text_for_main_menu_selection_volume[0] + 185,
             main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] + 95))
+
+        display.screen.blit(settings_menu.text_for_setting_menu_set_volume_for_effect, (main_menu.coordinates_of_text_for_main_menu_selection_volume[0],main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] + 150))
+        display.screen.blit(settings_menu.text_for_setting_menu_turn_down_the_sound, (main_menu.coordinates_of_text_for_main_menu_selection_volume[0] + 100,main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] + 145))
+        display.screen.blit(main_menu.text_for_setting_menu_effect_percentage, (main_menu.coordinates_of_text_for_main_menu_selection_volume[0] + 125,main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] + 152))
+        display.screen.blit(settings_menu.text_for_setting_menu_turn_up_the_sound, (main_menu.coordinates_of_text_for_main_menu_selection_volume[0] + 185,main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] + 145))
 
     # отрисовка текста на игровом поле
     if in_playing:
@@ -407,25 +417,26 @@ class Settings_menu(object):
         self.Main_menu_resolution_3 = "1280 x 1024"
         self.Main_menu_resolution_4 = "1920 x 1080"
 
-        self.Main_menu_Button_set_volume = "Sound: "
+        self.Main_menu_Button_set_volume = "Music: "
         self.Main_menu_Button_turn_down_the_sound = "-"
         self.Main_menu_Button_turn_up_the_sound = "+"
+
+        self.Main_menu_Button_set_volume_effect = "Effects: "
 
         self.Text_for_messagebox_title = "Changing game settings"
         self.Text_for_messagebox_message = "Apply Changes?"
 
         # Дефолтные настройки
         screen_resolution_Default = 1
-
         self.game_sound_Default = 0.05
+        self.game_sound_effect_Default = 0.03
 
         # Размеры Кнопки
         self.size_button = (140, 40)
         self.size_button_resolution_selection = (14, 25)
         self.size_button_swich_screen_mode = (30, 30)
+        self.size_button_sound_selection = (self.size_button_resolution_selection[0], self.size_button_resolution_selection[1])
 
-        self.size_button_sound_selection = (
-            self.size_button_resolution_selection[0], self.size_button_resolution_selection[1])
 
         # Текст и его свойства, передаваемые в функцию building_text
         self.text_for_main_menu_3 = main_menu.font_for_main_menu.render(self.Main_menu_Button_back_out_of_settings, 1,
@@ -446,6 +457,10 @@ class Settings_menu(object):
             self.Main_menu_Button_turn_down_the_sound, 1, display.BLACK, display.PINCK)
         self.text_for_setting_menu_turn_up_the_sound = main_menu.font_for_main_menu.render(
             self.Main_menu_Button_turn_up_the_sound, 1, display.BLACK, display.PINCK)
+
+        self.text_for_setting_menu_set_volume_for_effect = main_menu.font_for_Screen_resolution_settings.render(
+            self.Main_menu_Button_set_volume_effect, 1,
+            display.BLACK, display.PINCK)
 
         #переменные, отвечеющие за то, чтобы программа проигрывала только один звук нажатия
         self.is_the_cursor_hovered = True
@@ -780,6 +795,48 @@ class Settings_menu(object):
                 if self.game_sound_Default < 1:
                     self.game_sound_Default += 0.01
                     Update_Fuking_volume()
+
+
+
+   # "Ползунки" смены уровня звука эффектов
+    def Button_turn_down_the_sound_of_effect(self):
+        global Save_Changes
+        global mouse_pose
+        global screen_resolution_Default
+
+        if ev.type == pygame.MOUSEBUTTONDOWN:
+            if main_menu.coordinates_of_text_for_main_menu_selection_volume[0] + 100 <= mouse_pose[0] <= \
+                    main_menu.coordinates_of_text_for_main_menu_selection_volume[0] + 100 + \
+                    self.size_button_sound_selection[0] and \
+                    main_menu.coordinates_of_text_for_main_menu_selection_volume[1] + 80 <= mouse_pose[1] <= \
+                    main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] + 150 + \
+                    self.size_button_sound_selection[1]:
+
+                Save_Changes = True
+
+                if self.game_sound_effect_Default > 0:
+                    self.game_sound_effect_Default -= 0.01
+                    Update_Fuking_volume()
+
+    def Button_turn_up_the_sound_of_effect(self):
+        global mouse_pose
+        global screen_resolution_Default
+        global Save_Changes
+
+        if ev.type == pygame.MOUSEBUTTONDOWN:
+            if main_menu.coordinates_of_text_for_main_menu_selection_volume[0] + 185 <= mouse_pose[0] <= \
+                    main_menu.coordinates_of_text_for_main_menu_selection_volume[0] + 185 + \
+                    self.size_button_sound_selection[0] and \
+                    main_menu.coordinates_of_text_for_main_menu_selection_volume[1] + 80 <= mouse_pose[1] <= \
+                    main_menu.coordinates_of_text_for_main_menu_screen_resolution[1] + 150 + \
+                    self.size_button_sound_selection[1]:
+
+                Save_Changes = True
+
+                if self.game_sound_effect_Default < 1:
+                    self.game_sound_effect_Default += 0.01
+                    Update_Fuking_volume()
+
 
 
 """"---------------------------------------------Раздел проектировки игргового поля---------------------------------------------"""
@@ -1237,6 +1294,8 @@ while True:
         settings_menu.Back_button_pressed()
         settings_menu.Button_turn_down_the_sound()
         settings_menu.Button_turn_up_the_sound()
+        settings_menu.Button_turn_down_the_sound_of_effect()
+        settings_menu.Button_turn_up_the_sound_of_effect()
 
     if in_playing:
         playing_field.draw_field()
