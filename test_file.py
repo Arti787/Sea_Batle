@@ -1,5 +1,8 @@
-import pygame
-import sys
+import pygame, sys
+from Obects.Sounds import Test
+sound_ctrl = Test()
+
+sound_ctrl.main_menu()
 
 sc = pygame.display.set_mode((400, 300))
 sc.fill((100, 150, 200))
