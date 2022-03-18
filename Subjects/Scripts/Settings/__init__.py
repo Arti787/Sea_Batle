@@ -6,7 +6,11 @@ class Settings():
         print("Settings")
 
     def test(self):
-        print(context.mouse_click)
-        while context.mouse_click == 1:
+        test_file = open('why.txt','r')
+
+        cords = test_file.read()
+
+        print(cords)
+        if context.mouse_click == 1:
             print("клик")
 

@@ -48,3 +48,6 @@ class Context():
         self.in_settings = False
         # Находится ли игрок непосредствено в игре?
         self.in_game = False
+
+
+        #self.test_file = open('why.txt','w')

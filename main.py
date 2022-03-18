@@ -22,12 +22,19 @@ running = True
 tmp = 0
 
 
+
+
 while running:
     screen.fill(context.WHITE)
+    
 
     for event in pygame.event.get():
         # записываем координаты курсора в context (mouse_pose[0] - x позиция, mouse_pose[1] - y позиция)
         context.mouse_pos = pygame.mouse.get_pos() 
+        test_file = open('why.txt','w')
+
+        file_res = "{0}:{1}".format(context.mouse_pos[0], context.mouse_pos[1])
+        test_file.write(file_res)
 
         # проверить закрытие окна
         if event.type == pygame.QUIT:
@@ -43,6 +50,8 @@ while running:
 
         if event.type == pygame.MOUSEBUTTONUP:
             context.mouse_click = 0
+
+        test_file.close()
 
         settings.test()
 
