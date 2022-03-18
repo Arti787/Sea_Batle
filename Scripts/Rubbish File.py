@@ -1,46 +1,21 @@
 import pygame
 import sys
 
-sc = pygame.display.set_mode((400, 300))
-sc.fill((100, 150, 200))
+sc = pygame.display.set_mode((720, 720))
+sc.fill((0, 0, 0))
 
-dog_surf = pygame.image.load(
-    'images/Save.png').convert()
-dog_surf.set_colorkey(
-    (255, 255, 255))
-dog_rect = dog_surf.get_rect(
-    center=(200, 150))
-sc.blit(dog_surf, dog_rect)
-pygame.display.update()
 
-# ждем 1 секунду перед изменением
-pygame.time.wait(1000)
 
-sc.fill((100, 150, 200))
-# уменьшаем в два раза
-scale = pygame.transform.scale(
-    dog_surf, (dog_surf.get_width() // 2,
-               dog_surf.get_height() // 2))
+Image = pygame.image.load('images/Papka.png')
+Rect_Of_Image = Image.get_rect()
 
-scale_rect = scale.get_rect(
-    center=(200, 150))
-
-sc.blit(scale, scale_rect)
-
-pygame.display.update(dog_rect)
-pygame.time.wait(1000)
-
-sc.fill((100, 150, 200))
-# поворачиваем на 45 градусов
-rot = pygame.transform.rotate(
-    dog_surf, 45)
-rot_rect = rot.get_rect(
-    center=(200, 150))
-sc.blit(rot, rot_rect)
-pygame.display.update()
+def r():
+    sc.blit(Image, Rect_Of_Image)
 
 while 1:
     for i in pygame.event.get():
         if i.type == pygame.QUIT:
             sys.exit()
     pygame.time.delay(20)
+    r()
+

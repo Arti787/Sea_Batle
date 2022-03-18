@@ -13,10 +13,6 @@ pg.mixer.music.load('Sounds/piraty-karibskogo-morja-saundtrek-hes-a-pirate-glavn
 
 pg.mixer.music.play(-1)
 
-
-
-
-
 """"Раздел булевых переменных, отвечающих за отображение различных вещей на дисплее игрока"""
 
 # Переменная, устанавливающая разрешение по умолчанию (если она True то разрешение ставится по умолчанию 720х720)
@@ -44,6 +40,9 @@ inv_ships = False
 """"---------------------------------------------Раздел специальных функций---------------------------------------------"""
 
 
+
+
+
 # Перезапуск инициализирующих функций для применения новых настроек
 def Update_Fuking_function():
     global Save_Changes
@@ -53,7 +52,6 @@ def Update_Fuking_function():
     main_menu.__init__()
     playing_field.__init__()
     Update_Fuking_volume()
-
 
 # установка необходимого уровн звука
 def Update_Fuking_volume():
@@ -845,23 +843,28 @@ class Settings_menu(object):
 class Playing_field(object):
     def __init__(self):
 
+        #Ебаный костыль
+        self.default_ship = True
+        #Кораблик, выбранный по умолчанию
+        self.Change_ship = 3
+
         self.now_Screen_Size = (display.Standard_Screen_Size[screen_resolution_Default])
 
         # Размеры кнопок
-        self.size_button_from_settings_menu = (
-        main_menu.size_button[0] + (25 - 25 * self.now_Screen_Size[1] / self.now_Screen_Size[0]),
-        main_menu.size_button[1] + (25 - 25 * self.now_Screen_Size[1] / self.now_Screen_Size[0]))
-        self.button_side_size = 40
+        self.size_button_from_settings_menu = (main_menu.size_button[0] + (25 - 25 * self.now_Screen_Size[1] / self.now_Screen_Size[0]), main_menu.size_button[1] + (25 - 25 * self.now_Screen_Size[1] / self.now_Screen_Size[0]))
+        self.button_side_size = 40 # размер для кнопок с картинками
         self.block_side_size = 25 + (25 - (25 * self.now_Screen_Size[1] / self.now_Screen_Size[0]))
         self.block_size = (self.block_side_size, self.block_side_size)
-        self.size_button = (self.button_side_size - 25 + self.block_side_size,
-                            self.button_side_size - 25 + self.block_side_size)  # размер для кнопок с картинками
+        self.size_button = (self.button_side_size - 25 + self.block_side_size, self.button_side_size - 25 + self.block_side_size)  # размер для кнопок с картинками
+
+        self.size_palka = (4,display.res[1])
+
         # Отступ
         self.indent = 2
         # список с постоянными значениями координат блоков поля
-        self.BLOCK_PLACE = [display.res[0] * (1 / 5), 100]
+        self.BLOCK_PLACE = [(( self.now_Screen_Size[0] - (10*self.block_side_size+9*self.indent)/2) - self.now_Screen_Size[0]/2) - display.res[0] * 0.15, (self.now_Screen_Size[1] -(10*self.block_side_size+9*self.indent)/2) - self.now_Screen_Size[1]/2]
         # список с изменяющимися значениями координат блоков поля
-        self.block_place = [display.res[0] * (1 / 5), 100]
+        self.block_place = [(( self.now_Screen_Size[0] - (10*self.block_side_size+9*self.indent)/2) - self.now_Screen_Size[0]/2) - display.res[0] * 0.15, (self.now_Screen_Size[1] -(10*self.block_side_size+9*self.indent)/2) - self.now_Screen_Size[1]/2]
         # Доступна ли клетка для размещения кораблика?
         self.accessible_area = True
         # Цвет голограммы кораблика (Зелёный/Красный)
@@ -879,19 +882,47 @@ class Playing_field(object):
         self.i = 0
 
         #Инициализация и открытие файла сохранения
-        self.ships_preset = open(self.preset_way,'w')
+        self.ships_preset = open(self.preset_way, 'w')
 
         # Координаты отрисовки кнопок
-        self.draw_load_button = (display.res[0] * (1 / 3), 10)
-        self.draw_save_button = (self.draw_load_button[0] + 50 - 25 + self.block_side_size, self.draw_load_button[1])
-        self.draw_play_button = (self.draw_load_button[0] + 100 - 25 + self.block_side_size + (
-                    25 - (25 * self.now_Screen_Size[1] / self.now_Screen_Size[0])), self.draw_load_button[1])
+        self.draw_memo_button = (display.res[0] - 10 - self.size_button[0], 10)
+        self.draw_palka = (display.res[0] * 0.70, 0)
+        self.draw_play_button = (self.draw_palka[0] - self.size_button_from_settings_menu[0] - 10,self.draw_palka[1] + 10)
+        self.draw_save_button = (self.draw_play_button[0] - self.size_button[0] - 10, self.draw_palka[1] + 10)
+        self.draw_load_button = (self.draw_save_button[0] - self.size_button[0] - 10, self.draw_palka[1] + 10)
+
+        self.draw_ship = (display.res[0] * 0.75,display.res[0] * 0.35 )
+
+        #Местоположение в программе и на форме фотографий
+        self.Image_of_Papka = pygame.image.load('images/Papka.png')
+        self.Image_of_Papka =pygame.transform.scale(self.Image_of_Papka, self.size_button)
+        self.Rect_Of_Image_Papka =self.Image_of_Papka.get_rect()
+        self.Rect_Of_Image_Papka.x = self.draw_load_button[0]
+        self.Rect_Of_Image_Papka.y = self.draw_load_button[1]
+
+        self.Image_of_Save = pygame.image.load('images/Save.png')
+        self.Image_of_Save = pygame.transform.scale(self.Image_of_Save, (self.size_button[0]-5, self.size_button[1]-5))
+        self.Rect_Of_Image_Save = self.Image_of_Save.get_rect()
+        self.Rect_Of_Image_Save.x = self.draw_save_button[0] + 2
+        self.Rect_Of_Image_Save.y = self.draw_save_button[1] + 2
+
+        self.Image_of_memo = pygame.image.load('images/memo.png')
+        self.Image_of_memo = pygame.transform.scale(self.Image_of_memo, (self.size_button[0]-7, self.size_button[1]-7))
+        self.Rect_Of_Image_memo = self.Image_of_Papka.get_rect()
+        self.Rect_Of_Image_memo.x = self.draw_memo_button[0] + 3
+        self.Rect_Of_Image_memo.y = self.draw_memo_button[1] + 4
+
+        self.Image_of_Right_Arrow = pygame.image.load('images/Right_Arrow.png')
+        self.Image_of_Right_Arrow = pygame.transform.scale(self.Image_of_Right_Arrow, (self.size_button[0] - 7, self.size_button[1] - 7))
+        self.Rect_Of_Image_Right_Arrow = self.Image_of_Right_Arrow.get_rect()
+        self.Rect_Of_Image_Right_Arrow.x = self.draw_ship[0] - 4
 
         #переменные, отвечеющие за то, чтобы программа проигрывала только один звук нажатия
         self.is_the_cursor_hovered = True
         self.is_the_cursor_hovered1 = True
         self.is_the_cursor_hovered2 = True
         self.is_the_cursor_hovered3 = True
+        self.is_the_cursor_hovered4 = True
 
 
     def one_deck_ship (self):
@@ -949,8 +980,6 @@ class Playing_field(object):
             pygame.draw.rect(display.screen, self.hologram_color, [[self.block_place[0] + self.indent*2 + self.block_side_size*2, self.block_place[1]], self.block_size])
         if y <= 6:
             pygame.draw.rect(display.screen, self.hologram_color, [[self.block_place[0] + self.indent*3 + self.block_side_size*3, self.block_place[1]], self.block_size])
-
-
 
     def inv_four_deck_ship (self, x):
         if x > 6:
@@ -1165,6 +1194,7 @@ class Playing_field(object):
         global in_playing
         global apply
 
+
         if self.draw_load_button[0] <= mouse_pose[0] <= self.draw_load_button[0] + self.size_button[0] and \
                 self.draw_load_button[1] <= mouse_pose[1] <= self.draw_load_button[1] + self.size_button[1]:
 
@@ -1179,6 +1209,9 @@ class Playing_field(object):
             self.is_the_cursor_hovered1 = True
 
             pygame.draw.rect(display.screen, display.GRAY, [self.draw_load_button, self.size_button])
+
+        # отрисовка картинки
+        display.screen.blit(self.Image_of_Papka,self.Rect_Of_Image_Papka)
 
     # Кнопка Сохрания планеровки в файловую систему
     def save_button_hovered_in_playing(self):
@@ -1202,6 +1235,8 @@ class Playing_field(object):
             self.is_the_cursor_hovered2 = True
 
             pygame.draw.rect(display.screen, display.GRAY, [self.draw_save_button, self.size_button])
+        #отрисовка картинки
+        display.screen.blit(self.Image_of_Save, self.Rect_Of_Image_Save)
 
     # Кнопка play
     def play_button_hovered_in_playing(self):
@@ -1232,6 +1267,104 @@ class Playing_field(object):
             self.text_for_Playing_field_play = main_menu.font_for_main_menu.render(main_menu.Main_menu_Button_play, 1,
                                                                                    display.WHITE, display.GRAY)
 
+    # Кнопка ?
+    def memo_button_hovered_in_playing(self):
+
+        global mouse_pose
+        global in_menu
+        global in_settings
+        global in_playing
+        global apply
+
+        if self.draw_memo_button[0] <= mouse_pose[0] <= self.draw_memo_button[0] + self.size_button[0] and \
+                self.draw_memo_button[1] <= mouse_pose[1] <= self.draw_memo_button[1] + self.size_button[1]:
+
+            if self.is_the_cursor_hovered4:
+                sound_play()
+                self.is_the_cursor_hovered4 = False
+
+            pygame.draw.rect(display.screen, display.LIGHT_GRAY, [self.draw_memo_button, self.size_button])
+
+        else:
+
+            self.is_the_cursor_hovered4 = True
+
+            pygame.draw.rect(display.screen, display.GRAY, [self.draw_memo_button, self.size_button])
+
+        # отрисовка картинки
+        display.screen.blit(self.Image_of_memo, self.Rect_Of_Image_memo)
+
+    # Отрисовка палки
+    def Palka_draw_and_easter_egg(self):
+        pygame.draw.rect(display.screen, display.LIGHT_GRAY, [self.draw_palka, self.size_palka])
+
+    #========== Отрисовка кнопок выбора корабликов ==========
+
+
+    def Change_Ship(self):
+        global mouse_pose
+        global in_menu
+        global in_settings
+        global in_playing
+        global apply
+        global selected_ships
+
+
+
+        self.Bladskie_Koohdinati_Mesta_Meny_S_Korabylami_0 = (self.draw_ship[0] + self.block_size[0], self.draw_ship[1] + self.indent * 0 * (15 + (25 - (25 * self.now_Screen_Size[1] / self.now_Screen_Size[0])))-2 )
+        self.Bladskie_Koohdinati_Mesta_Meny_S_Korabylami_1 = (self.draw_ship[0] + self.block_size[0], self.draw_ship[1] + self.indent * 1 * (15 + (25 - (25 * self.now_Screen_Size[1] / self.now_Screen_Size[0])))-2 )
+        self.Bladskie_Koohdinati_Mesta_Meny_S_Korabylami_2 = (self.draw_ship[0] + self.block_size[0], self.draw_ship[1] + self.indent * 2 * (15 + (25 - (25 * self.now_Screen_Size[1] / self.now_Screen_Size[0])))-2 )
+        self.Bladskie_Koohdinati_Mesta_Meny_S_Korabylami_3 = (self.draw_ship[0] + self.block_size[0], self.draw_ship[1] + self.indent * 3 * (15 + (25 - (25 * self.now_Screen_Size[1] / self.now_Screen_Size[0])))-2 )
+
+        for j in range(0, 4):
+            pygame.draw.rect(display.screen, display.TEAL, [(self.draw_ship[0]+ self.block_size[0], self.draw_ship[1] + self.indent * j * (15 + (25 - (25 * self.now_Screen_Size[1] / self.now_Screen_Size[0])))-2 ), (self.block_size[0]* (4-j) + self.indent*(5-j), self.block_size[1]+3)])
+
+            for i in range(1, 5):
+                if j==0 :
+                    pygame.draw.rect(display.screen, display.GRAY, [[self.draw_ship[0] + self.indent * i + self.block_side_size * i, self.draw_ship[1] + self.indent * j * (15 + (25 - (25 * self.now_Screen_Size[1] / self.now_Screen_Size[0])))], self.block_size])
+                elif j==1 and i!=4:
+                    pygame.draw.rect(display.screen, display.GRAY, [[self.draw_ship[0] + self.indent * i + self.block_side_size * i,self.draw_ship[1] + self.indent * j * (15 + (25 - (25 * self.now_Screen_Size[1] / self.now_Screen_Size[0])))],self.block_size])
+                elif j==2 and i!=4 and i!=3:
+                    pygame.draw.rect(display.screen, display.GRAY, [[self.draw_ship[0] + self.indent * i + self.block_side_size * i,self.draw_ship[1] + self.indent * j * (15 + (25 - (25 * self.now_Screen_Size[1] / self.now_Screen_Size[0])))],self.block_size])
+                elif j==3 and (i==0 or i==1  ):
+                    pygame.draw.rect(display.screen, display.GRAY, [[self.draw_ship[0] + self.indent * i + self.block_side_size * i,self.draw_ship[1] + self.indent * j * (15 + (25 - (25 * self.now_Screen_Size[1] / self.now_Screen_Size[0])))],self.block_size])
+
+
+        if ev.type == pygame.MOUSEBUTTONDOWN:
+
+            pygame.draw.rect(display.screen, display.WHITE,[[self.draw_ship[0] - 7, self.draw_ship[1] - 1], [30+(25-(25 * self.now_Screen_Size[1] / self.now_Screen_Size[0])), 400]]) #ОСТОРОЖНО КОСТЫЛЬ, СВЯЗАНЫЙ С РАЗМЕРАМИ ЗАКРАШИВАЕМОГО ПРОСТРОНАСТВА
+
+            if self.Bladskie_Koohdinati_Mesta_Meny_S_Korabylami_0[0] <= mouse_pose[0] <= self.Bladskie_Koohdinati_Mesta_Meny_S_Korabylami_0[0] +  self.block_size[0]* (4) + self.indent*(5) and self.Bladskie_Koohdinati_Mesta_Meny_S_Korabylami_0[1] <= mouse_pose[1] <= self.Bladskie_Koohdinati_Mesta_Meny_S_Korabylami_0[1] +  self.block_size[1]+3:
+                self.Change_ship = 0
+                selected_ships = 4
+
+
+            if self.Bladskie_Koohdinati_Mesta_Meny_S_Korabylami_1[0] <= mouse_pose[0] <= self.Bladskie_Koohdinati_Mesta_Meny_S_Korabylami_1[0] + self.block_size[0] * (4) + self.indent * (5) and self.Bladskie_Koohdinati_Mesta_Meny_S_Korabylami_1[1] <= mouse_pose[1] <= self.Bladskie_Koohdinati_Mesta_Meny_S_Korabylami_1[1] + self.block_size[1] + 3:
+                self.Change_ship = 1
+                selected_ships = 3
+
+            if self.Bladskie_Koohdinati_Mesta_Meny_S_Korabylami_2[0] <= mouse_pose[0] <= self.Bladskie_Koohdinati_Mesta_Meny_S_Korabylami_2[0] + self.block_size[0] * (4) + self.indent * (5) and self.Bladskie_Koohdinati_Mesta_Meny_S_Korabylami_2[1] <= mouse_pose[1] <= self.Bladskie_Koohdinati_Mesta_Meny_S_Korabylami_2[1] + self.block_size[1] + 3:
+                self.Change_ship = 2
+                selected_ships = 2
+
+            if self.Bladskie_Koohdinati_Mesta_Meny_S_Korabylami_3[0] <= mouse_pose[0] <= self.Bladskie_Koohdinati_Mesta_Meny_S_Korabylami_3[0] + self.block_size[0] * (4) + self.indent * (5) and self.Bladskie_Koohdinati_Mesta_Meny_S_Korabylami_3[1] <= mouse_pose[1] <= self.Bladskie_Koohdinati_Mesta_Meny_S_Korabylami_3[1] + self.block_size[1] + 3:
+                self.Change_ship = 3
+                selected_ships = 1
+
+
+
+
+        if self.default_ship:
+            self.Rect_Of_Image_Right_Arrow.y = self.draw_ship[1] + self.indent * self.Change_ship * (15 + (25 - (25 * self.now_Screen_Size[1] / self.now_Screen_Size[0]))) - 4
+            display.screen.blit(self.Image_of_Right_Arrow, self.Rect_Of_Image_Right_Arrow)
+            self.default_ship = False
+
+
+
+        self.Rect_Of_Image_Right_Arrow.y = self.draw_ship[1] + self.indent * self.Change_ship * (15 + (25 - (25 * self.now_Screen_Size[1] / self.now_Screen_Size[0]))) - 4
+        print(self.Change_ship)
+        display.screen.blit(self.Image_of_Right_Arrow, self.Rect_Of_Image_Right_Arrow)
+
 
 """---------------------------------------------Объявление экземпляров класса---------------------------------------------"""
 display = Display()
@@ -1254,15 +1387,35 @@ while True:
             if ev.key == pygame.K_1:
                 selected_ships = 1
                 print("1")
+
+                if in_playing:
+                    playing_field.Change_ship =3
+                    pygame.draw.rect(display.screen, display.WHITE, [[playing_field.draw_ship[0] - 7, playing_field.draw_ship[1] - 1], [30 + (25 - (25 * playing_field.now_Screen_Size[1] / playing_field.now_Screen_Size[0])), 400]])  # ОСТОРОЖНО КОСТЫЛЬ, СВЯЗАНЫЙ С РАЗМЕРАМИ ЗАКРАШИВАЕМОГО ПРОСТРОНАСТВА
+
             if ev.key == pygame.K_2:
                 selected_ships = 2
                 print("2")
+
+                if in_playing:
+                    playing_field.Change_ship = 2
+                    pygame.draw.rect(display.screen, display.WHITE, [[playing_field.draw_ship[0] - 7, playing_field.draw_ship[1] - 1], [30 + (25 - (25 * playing_field.now_Screen_Size[1] / playing_field.now_Screen_Size[0])), 400]])  # ОСТОРОЖНО КОСТЫЛЬ, СВЯЗАНЫЙ С РАЗМЕРАМИ ЗАКРАШИВАЕМОГО ПРОСТРОНАСТВА
+
             if ev.key == pygame.K_3:
                 selected_ships = 3
                 print("3")
+
+                if in_playing:
+                    playing_field.Change_ship = 1
+                    pygame.draw.rect(display.screen, display.WHITE, [[playing_field.draw_ship[0] - 7, playing_field.draw_ship[1] - 1], [30 + (25 - (25 * playing_field.now_Screen_Size[1] / playing_field.now_Screen_Size[0])), 400]])  # ОСТОРОЖНО КОСТЫЛЬ, СВЯЗАНЫЙ С РАЗМЕРАМИ ЗАКРАШИВАЕМОГО ПРОСТРОНАСТВА
+
             if ev.key == pygame.K_4:
                 selected_ships = 4
                 print("4")
+
+                if in_playing:
+                    playing_field.Change_ship = 0
+                    pygame.draw.rect(display.screen, display.WHITE, [[playing_field.draw_ship[0] - 7, playing_field.draw_ship[1] - 1], [30 + (25 - (25 * playing_field.now_Screen_Size[1] / playing_field.now_Screen_Size[0])), 400]])  # ОСТОРОЖНО КОСТЫЛЬ, СВЯЗАНЫЙ С РАЗМЕРАМИ ЗАКРАШИВАЕМОГО ПРОСТРОНАСТВА
+
             if ev.key == pygame.K_r:
                 inv_ships = not inv_ships
                 print(inv_ships)
@@ -1298,12 +1451,21 @@ while True:
         settings_menu.Button_turn_up_the_sound_of_effect()
 
     if in_playing:
+
         playing_field.draw_field()
         playing_field.load_button_hovered_in_playing()
         playing_field.save_button_hovered_in_playing()
         playing_field.play_button_hovered_in_playing()
         playing_field.Back_button_hovered_in_playing()
+
+        playing_field.memo_button_hovered_in_playing()
+        playing_field.Palka_draw_and_easter_egg()
+        playing_field.Change_Ship()
+
         playing_field.Back_button_pressed_in_playing()
+
+
+
 
     # Вызов функции отрисовки текста на кнопках в главном меню
     building_text()
