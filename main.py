@@ -7,54 +7,62 @@ from Subjects.Scripts.Playing_field import Playing_field
 
 """---------------------------------------------Объявление экземпляров класса---------------------------------------------"""
 
-context = Context()
-main_menu = Main_menu()
-settings = Settings()
-playing_field = Playing_field()
+ctx = Context()
+main_menu = Main_menu(ctx)
+settings = Settings(ctx)
+playing_field = Playing_field(ctx)
 
 """-----------------------------------------------------------------------------------------------------------------------"""
 
 pygame.init()
 pygame.display.set_caption("Sea Battle by Sergaris and GriGA")
-screen = pygame.display.set_mode(context.screen_resolution[context.res_id])
-running = True
-
-tmp = 0
 
 
-
-
-while running:
-    screen.fill(context.WHITE)
-    
+while ctx.running:
+    ctx.screen.fill(ctx.SUPER_LIGHT_YELLOW)
 
     for event in pygame.event.get():
         # записываем координаты курсора в context (mouse_pose[0] - x позиция, mouse_pose[1] - y позиция)
-        context.mouse_pos = pygame.mouse.get_pos() 
-        test_file = open('why.txt','w')
-
-        file_res = "{0}:{1}".format(context.mouse_pos[0], context.mouse_pos[1])
-        test_file.write(file_res)
+        ctx.mouse_pos = pygame.mouse.get_pos() 
 
         # проверить закрытие окна
         if event.type == pygame.QUIT:
-            running = False
+            ctx.running = False
 
         if event.type == pygame.KEYDOWN:
             # записываем id нажатой кнопки в context
-            context.key = event.key
+            ctx.key = event.key
+            print(ctx.key)
 
         if event.type == pygame.MOUSEBUTTONDOWN:
-            context.mem_mouse_pos = context.mouse_pos
-            context.mouse_click += 1
+            # Запоминаем корды мышки после нажатия, чтобы в будущем не детектить повторые клики
+            ctx.mem_mouse_pos = ctx.mouse_pos
+            ctx.mouse_click = 1
 
-        if event.type == pygame.MOUSEBUTTONUP:
-            context.mouse_click = 0
+        if ctx.key == 45 and ctx.res_id != 0:
+            ctx.key = 0
+            ctx.res_id -= 1
+            ctx.screen = pygame.display.set_mode(ctx.screen_resolution[ctx.res_id])
+            ctx.update_button_scale()
+            print(ctx.res_id)
 
-        test_file.close()
+        if ctx.key == 61 and ctx.res_id != len(ctx.screen_resolution)-1:
+            ctx.key = 0
+            ctx.res_id += 1
+            ctx.screen = pygame.display.set_mode(ctx.screen_resolution[ctx.res_id])
+            ctx.update_button_scale()
+            print(ctx.res_id)
+        
 
-        settings.test()
+    if ctx.in_menu == True:
+        main_menu.start_button()
+        main_menu.settings_button()
+        main_menu.exit()
+        main_menu.__init__(ctx)
 
-
+    if ctx.in_settings == True:
+        settings.back_button()
+        settings.settings_body()
+        settings.__init__(ctx)
 
     pygame.display.flip()
