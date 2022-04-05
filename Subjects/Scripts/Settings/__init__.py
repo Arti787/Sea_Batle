@@ -9,11 +9,22 @@ class Settings():
         # корды отрисовки кнопки
         self.back_button_cords = [0 + self.indent,0 + self.indent]
 
+        # кнопка с выпадающим списком разрешения
+        self.res_list_button_size = [self.ctx.button_width*0.8, self.ctx.button_height*0.8]
+
         # Текст кнопки "back"
         self.back_text = self.ctx.main_font.render("back", True , self.ctx.WHITE)
 
         # Текст "Теущее разрешение"
-        self.resolution_text = self.ctx.main_font.render("back", True , self.ctx.WHITE, self.ctx.SEC_BUTTON_COLLOR)
+        self.resolution_text = self.ctx.main_font.render("resolution: ", True , self.ctx.MAIN_BUTTON_COLLOR)
+
+        # Текст с информацией о текущем разрешении
+        self.current_res_text = self.ctx.sec_font.render("{0} x {1}".format(self.ctx.screen_resolution[self.ctx.res_id][0], self.ctx.screen_resolution[self.ctx.res_id][1]), True , self.ctx.WHITE)
+
+        # отступ слевой и справой стороны, для двойной системы объектов (например "Надпись" + "Информация сопутствующая надписи")
+        self.double_object_indent = (self.ctx.screen_resolution[self.ctx.res_id][0] - (self.resolution_text.get_rect()[2] + self.indent + self.res_list_button_size[0]) ) / 2
+
+
 
 
     def back_button(self):
@@ -34,8 +45,8 @@ class Settings():
         self.ctx.screen.blit(self.back_text, self.back_text.get_rect(center=([self.back_button_cords[0] + self.ctx.button_size[0] / 2, self.back_button_cords[1] + self.ctx.button_size[1] / 2])))
 
     def settings_body(self):
-        print()
-        pygame.draw.rect(self.ctx.screen, self.ctx.SEC_BUTTON_COLLOR, ((self.ctx.screen_resolution[self.ctx.res_id][0]/2 - self.ctx.button_size[0] / 2, self.ctx.button_size[1] + self.indent), self.ctx.button_size))
-        self.ctx.screen.blit(self.resolution_text, self.resolution_text.get_rect(center=(self.ctx.screen_resolution[self.ctx.res_id][0]/2 , self.ctx.button_size[1]*1.5 + self.indent) ))
-
+        print(self.double_object_indent)
+        self.ctx.screen.blit(self.resolution_text, (self.double_object_indent, self.ctx.button_size[1]*2 + self.indent) )
+        pygame.draw.rect(self.ctx.screen, self.ctx.SEC_BUTTON_COLLOR, [(self.double_object_indent + self.resolution_text.get_rect()[2] + self.indent, (self.ctx.button_size[1]*2 + self.indent + (self.resolution_text.get_rect()[3] / 2) - (self.res_list_button_size[1]/2)) ), self.res_list_button_size])
+        self.ctx.screen.blit(self.current_res_text, self.current_res_text.get_rect(center=((self.double_object_indent + self.resolution_text.get_rect()[2] + self.indent + self.res_list_button_size[0]/2, (self.ctx.button_size[1]*2 + self.indent + (self.resolution_text.get_rect()[3] / 2) - (self.res_list_button_size[1]/2) + self.res_list_button_size[1]/2) ))))
 

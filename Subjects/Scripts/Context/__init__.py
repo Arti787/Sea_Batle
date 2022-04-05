@@ -27,12 +27,14 @@ class Context():
         self.TEAL = (0, 165, 129)  # Бирюзовый
         self.LIGHT_TEAL = (48, 211, 176)  # Светло бирюзовый
 
+        # основной цвет элементов интерфейса
         self.MAIN_BUTTON_COLLOR = self.TEAL
-
+        # основной цвет при наведении
         self.MAIN_BUTTON_COLLOR_HOWER = self.LIGHT_TEAL
 
+        # вторичный цвет элементов интерфейса
         self.SEC_BUTTON_COLLOR = self.ORANGE
-
+        # вторичный цвет при наведении
         self.SEC_BUTTON_COLLOR_HOWER = self.LIGHT_ORANGE
 
          
@@ -43,7 +45,7 @@ class Context():
         
         """Раздел Функциональных переменных"""
         # разрешения экрана
-        self.screen_resolution = [[854, 480], [1280,720], [1920, 1080]]
+        self.screen_resolution = [[854, 480], [1067, 600], [1280,720]]
         # id текущего разрешения экрана
         self.res_id = 0
         # главная переменная экрана
@@ -78,8 +80,11 @@ class Context():
         # размер кнопки
         self.button_size = [self.button_width, self.button_height]
 
-        # шрифт, используемый в программе
+        # основной шрифт, используемый в программе
         self.main_font = pygame.font.SysFont('Impact', int(self.button_height * 0.85))
+
+        # вторичный шрифт, используемый в программе
+        self.sec_font = pygame.font.SysFont('Impact', int(self.button_height * 0.7))
         
         # id нажатой клавиши
         self.key = 0
@@ -109,4 +114,6 @@ class Context():
         self.button_size = [self.button_width, self.button_height]
 
         self.main_font = pygame.font.SysFont('Impact', int(self.button_height * 0.85))
+
+        self.sec_font = pygame.font.SysFont('Impact', int(self.button_height * 0.7))
 
